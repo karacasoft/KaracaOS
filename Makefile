@@ -1,0 +1,37 @@
+TARGETARCH := i686
+
+SYSROOT := ./sysroot
+DESTDIR := $(SYSROOT)
+
+PREFIX := /usr
+
+INCLUDEDIR := $(PREFIX)/include
+BINDIR := /bin
+BOOTDIR := /boot
+
+PROJDIRS := kernel
+
+CC := $(TARGETARCH)-elf-gcc --sysroot=$(SYSROOT)
+AS := $(TARGETARCH)-elf-as
+AR := $(TARGETARCH)-elf-ar
+
+LD := $(TARGETARCH)-elf-ld
+
+CFLAGS := -isystem=$(INCLUDEDIR) -g -std=gnu11 -Wall -Wextra -O2
+
+include $(addsuffix /make.config,$(PROJDIRS))
+
+.PHONY: all clean install
+
+all: $(PROJDIRS)
+
+clean: $(addsuffix -clean,$(PROJDIRS))
+	rm -rf $(SYSROOT)
+
+install: install-mkdirs $(addsuffix -install,$(PROJDIRS))
+
+install-mkdirs:
+	@mkdir -p $(SYSROOT)
+	@mkdir -p $(DESTDIR)/$(INCLUDEDIR)
+	@mkdir -p $(DESTDIR)/$(BINDIR)
+	@mkdir -p $(DESTDIR)/$(BOOTDIR)
