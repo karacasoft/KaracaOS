@@ -16,7 +16,7 @@
 #define VGA_COLOR_BRIGHT  0x8
 
 typedef struct __tty_handle {
-    uint16_t *bufferptr;
+    uint16_t *(*getbufferptr)(void);
     int width;
     int height;
 

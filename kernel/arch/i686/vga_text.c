@@ -8,6 +8,11 @@ tty_handle_t vga_ttyhandle;
 
 void arch_tty_init(void);
 
+uint16_t *arch_tty_getdefaultvgabufferptr(void)
+{
+    return (uint16_t *)(VGA_MEM_ADDR);
+}
+
 void arch_tty_init(void)
 {
     if(!vga_tty_initialized)
@@ -17,9 +22,7 @@ void arch_tty_init(void)
         vga_ttyhandle.cursorx = 0;
         vga_ttyhandle.cursory = 0;
         vga_ttyhandle.color = 0;
-        vga_ttyhandle.bufferptr = (uint16_t *)(VGA_MEM_ADDR);
-
-
+        vga_ttyhandle.getbufferptr = arch_tty_getdefaultvgabufferptr;
 
         vga_tty_initialized = TRUE;
     }

@@ -12,4 +12,10 @@ typedef uint8_t BOOLEAN;
 #define TRUE (1)
 #define FALSE (0)
 
+
+typedef int16_t SYS_RET;
+#define SYS_RET_NO_ERROR 0
+#define SYS_RET_UNIDENTIFIED_ERROR 1
+
+
 #endif

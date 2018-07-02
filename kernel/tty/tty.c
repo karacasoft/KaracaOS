@@ -31,7 +31,7 @@ void tty_setcharwithcolor(uint16_t *address, char ch, uint8_t color)
 void tty_scroll(tty_handle_t *handle)
 {
     int x, y;
-    uint16_t *address = handle->bufferptr;
+    uint16_t *address = handle->getbufferptr();
     for(y = 1; y < handle->height; y++)
     {
         for(x = 0; x < handle->width; x++)
@@ -59,8 +59,8 @@ void tty_putch(tty_handle_t *handle, char ch)
     else if(ch == '\b')
     {
         size_t index = handle->cursory * handle->width + handle->cursorx;
-        handle->bufferptr[index] = 0x0000;
-        while((handle->bufferptr[index--] & 0xFF) == '\0')
+        handle->getbufferptr()[index] = 0x0000;
+        while((handle->getbufferptr()[index--] & 0xFF) == '\0')
         {
             if(--handle->cursorx < 0)
             {
@@ -78,7 +78,7 @@ void tty_putch(tty_handle_t *handle, char ch)
     }
     else
     {
-        tty_setcharwithcolor(handle->bufferptr +
+        tty_setcharwithcolor(handle->getbufferptr() +
             (handle->cursory * handle->width + handle->cursorx),
             ch, handle->color);
     }
