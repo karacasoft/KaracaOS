@@ -1,4 +1,4 @@
-export CROSS_COMP_BASE=/Users/karacasoft/opt/cross
+export CROSS_COMP_BASE=$HOME/opt/cross
 
 export PATH=$PATH:$CROSS_COMP_BASE/bin
 

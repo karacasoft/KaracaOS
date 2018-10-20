@@ -1,4 +1,4 @@
-export CROSS_COMP_BASE=/Users/karacasoft/opt/cross
+export CROSS_COMP_BASE=$HOME/opt/cross
 
 export PATH=$PATH:$CROSS_COMP_BASE/bin
 
@@ -9,4 +9,4 @@ menuentry "KaOSVengeance" {
     multiboot /boot/karacaos.kernel
 }
 EOF
-grub-mkrescue -o karacaos.iso sysroot -d $CROSS_COMP_BASE/lib/grub/i386-pc
+grub-mkrescue -o karacaos.iso sysroot --directory=$CROSS_COMP_BASE/lib/grub/i386-pc

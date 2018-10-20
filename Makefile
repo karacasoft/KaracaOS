@@ -23,15 +23,15 @@ include $(addsuffix /make.config,$(PROJDIRS))
 
 .PHONY: all clean install
 
-all: $(PROJDIRS)
+all: mkdirs $(PROJDIRS)
 
 clean: $(addsuffix -clean,$(PROJDIRS))
 	rm -rf $(SYSROOT)
 
-install: install-mkdirs $(addsuffix -install,$(PROJDIRS))
+install: $(addsuffix -install,$(PROJDIRS))
 
-install-mkdirs:
-	@mkdir -p $(SYSROOT)
-	@mkdir -p $(DESTDIR)/$(INCLUDEDIR)
-	@mkdir -p $(DESTDIR)/$(BINDIR)
-	@mkdir -p $(DESTDIR)/$(BOOTDIR)
+mkdirs:
+	mkdir -p $(SYSROOT)
+	mkdir -p $(DESTDIR)/$(INCLUDEDIR)
+	mkdir -p $(DESTDIR)/$(BINDIR)
+	mkdir -p $(DESTDIR)/$(BOOTDIR)

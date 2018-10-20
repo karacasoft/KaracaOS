@@ -1,6 +1,8 @@
 #ifndef __SYS_DEFS_H__
 #define __SYS_DEFS_H__ 1
 
+#include <stdint.h>
+
 // System information
 #define SYSTEM_NAME "KaracaOS"
 

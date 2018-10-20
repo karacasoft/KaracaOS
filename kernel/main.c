@@ -12,15 +12,13 @@ void kmain(void)
 
     tty_setcolors(tty, VGA_COLOR_GRAY, VGA_COLOR_BLACK);
     tty_puts(tty, welcomemessage, 30);
-    
-    
-    
 
-//    int i;
-//    for(i = 0; i < 30; i++)
-//    {
-//        tty_puts(tty, "Testing the \\n\n", sizeof("Testing the \\n\n"));
-//    }
+
+/*    int i;
+    for(i = 0; i < 30; i++)
+    {
+        tty_puts(tty, "Testing the \\n\n", sizeof("Testing the \\n\n"));
+    }*/
 
 
     while(TRUE);

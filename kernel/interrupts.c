@@ -3,7 +3,6 @@
 extern SYS_RET arch_interrupts_enableinterrupts();
 
 extern SYS_RET arch_interrupts_enablegate(int gate);
-extern SYS_RET arch_interrupts_sethandler(int gate, int_handler_t handler);
 
 extern SYS_RET arch_interrupts_clearhandler(int gate);
 extern SYS_RET arch_interrupts_disablegate(int gate);
@@ -30,7 +29,7 @@ SYS_RET interrupts_enablegate(int gate)
 
 SYS_RET interrupts_sethandler(int gate, int_handler_t handler)
 {
-    return arch_interrupts_sethandler(gate, handler);
+    return SYS_RET_NO_ERROR;
 }
 
 SYS_RET interrupts_clearhandler(int gate)
