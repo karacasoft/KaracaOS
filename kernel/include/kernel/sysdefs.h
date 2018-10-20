@@ -8,6 +8,7 @@
 
 #define SYSTEM_VERSION 0
 
+#define INTERRUPT_VECTOR_COUNT 256
 
 // System data types
 typedef uint8_t BOOLEAN;

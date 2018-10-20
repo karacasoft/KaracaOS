@@ -17,7 +17,7 @@ AR := $(TARGETARCH)-elf-ar
 
 LD := $(TARGETARCH)-elf-ld
 
-CFLAGS := -isystem=$(INCLUDEDIR) -g -std=gnu11 -Wall -Wextra -O2
+CFLAGS := -isystem=$(INCLUDEDIR) -g -std=gnu11 -Wall -Wextra
 
 include $(addsuffix /make.config,$(PROJDIRS))
 

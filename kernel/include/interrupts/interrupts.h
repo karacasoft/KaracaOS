@@ -6,7 +6,9 @@
 
 typedef int int_return_t;
 
-typedef int_return_t (*int_handler_t)(void *params);
+typedef int_return_t (*int_handler_t)(uint32_t intNo, uint32_t errCode, void *fullStackFrame);
+
+typedef SYS_RET (*generic_int_handler_t)(uint32_t intNo, uint32_t errCode, void *fullStackFrame);
 
 SYS_RET interrupts_init();
 
