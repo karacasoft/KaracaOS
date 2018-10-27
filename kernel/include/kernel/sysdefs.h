@@ -3,6 +3,13 @@
 
 #include <stdint.h>
 
+
+enum __SYS_RET {
+  SYS_RET_NO_ERROR = 0,
+  SYS_RET_UNIDENTIFIED_ERROR,
+  SYS_RET_OUT_OF_RANGE,
+};
+
 // System information
 #define SYSTEM_NAME "KaracaOS"
 
@@ -16,9 +23,7 @@ typedef uint8_t BOOLEAN;
 #define FALSE (0)
 
 
-typedef int16_t SYS_RET;
-#define SYS_RET_NO_ERROR 0
-#define SYS_RET_UNIDENTIFIED_ERROR 1
+typedef enum __SYS_RET SYS_RET;
 
 
 #endif

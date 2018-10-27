@@ -1,6 +1,8 @@
 #include <kernel/sysdefs.h>
 #include <interrupts/interrupts.h>
 
+#include "irq.h"
+
 extern void _isr0();
 extern void _isr1();
 extern void _isr2();
@@ -50,11 +52,6 @@ extern void _isr44();
 extern void _isr45();
 extern void _isr46();
 extern void _isr47();
-
-
-extern void _arch_irq_generic_handler(uint32_t intNo);
-extern SYS_RET arch_irq_initialize();
-
 
 
 typedef struct __IDTEntry {
@@ -164,7 +161,9 @@ SYS_RET arch_interrupts_enableinterrupts()
 
 SYS_RET arch_interrupts_enablegate(int gate)
 {
-  // TODO stub
+  if(gate >= 32 && gate < 48) {
+    arch_irq_enable(gate - 32);
+  }
   return SYS_RET_NO_ERROR;
 }
 
@@ -176,7 +175,9 @@ SYS_RET arch_interrupts_setgenerichandler(generic_int_handler_t handler)
 
 SYS_RET arch_interrupts_disablegate(int gate)
 {
-  // TODO stub
+  if(gate >= 32 && gate < 48) {
+    arch_irq_disable(gate - 32);
+  }
   return SYS_RET_NO_ERROR;
 }
 
@@ -189,7 +190,7 @@ SYS_RET arch_interrupts_disableinterrupts()
 void _arch_interrupt_handler(X86InterruptStackFrame *frame)
 {
   if(frame->int_no > 31 && frame->int_no < 48) {
-    _arch_irq_generic_handler(frame->int_no);
+    _arch_irq_generic_handler(frame->int_no, intHandler);
   } else {
     intHandler(frame->int_no, frame->err_code, (void *)frame);
   }

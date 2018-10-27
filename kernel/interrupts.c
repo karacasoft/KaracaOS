@@ -76,5 +76,4 @@ void interrupts_generic_handler(uint32_t int_number, uint32_t err_code, void *fr
     tty_puts(tty_getdefaulthandle(), "An unexpected exception has occured. System halted.\n", 53);
     while(TRUE);
   }
-  while(TRUE);
 }

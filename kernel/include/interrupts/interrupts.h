@@ -4,7 +4,11 @@
 #include <kernel/sysdefs.h>
 #include <stdint.h>
 
-typedef int int_return_t;
+typedef enum __int_return {
+  INT_RETURN_NO_ERROR = 0,
+  INT_RETURN_UNIDENTIFIED_ERROR,
+  INT_RETURN_WRONG_HANDLER
+} int_return_t;
 
 typedef int_return_t (*int_handler_t)(uint32_t intNo, uint32_t errCode, void *fullStackFrame);
 

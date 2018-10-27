@@ -1,3 +1,5 @@
+#include "irq.h"
+
 #include <kernel/sysdefs.h>
 #include "../iobase.h"
 
@@ -30,13 +32,12 @@
 extern void prepareInterruptGate(uint8_t gate, uint32_t handler, uint16_t selector, uint8_t flags);
 
 void setup_pic(uint8_t pic1offset, uint8_t pic2offset);
-void _arch_irq_generic_handler();
 
 void setup_pic(uint8_t pic1offset, uint8_t pic2offset)
 {
   unsigned char m1, m2;
 
-	m1 = ~0x00;
+	m1 = ~0x02;
 	m2 = ~0x80;
 
 	outb(PIC1_COMMAND, 0x11);
@@ -55,10 +56,41 @@ void setup_pic(uint8_t pic1offset, uint8_t pic2offset)
   outb(PIC2_DATA, m2);
 }
 
-void _arch_irq_generic_handler(uint32_t intNo)
+void _arch_irq_generic_handler(uint32_t intNo, generic_int_handler_t handler)
 {
+  (*handler)(intNo, 0, 0x0);
   if(intNo > 39) outb(PIC2_COMMAND, 0x20);
   outb(PIC1_COMMAND, 0x20);
+}
+
+SYS_RET arch_irq_enable(uint16_t gate)
+{
+  if(gate < 8) {
+    uint8_t mask = inb(PIC1_DATA);
+    outb(PIC1_DATA, mask & ~(1 << (gate)));
+    return SYS_RET_NO_ERROR;
+  } else if(gate < 16) {
+    uint8_t mask = inb(PIC2_DATA);
+    outb(PIC2_DATA, mask & ~(1 << (gate - 8)));
+    return SYS_RET_NO_ERROR;
+  } else {
+    return SYS_RET_OUT_OF_RANGE;
+  }
+}
+
+SYS_RET arch_irq_disable(uint16_t gate)
+{
+  if(gate < 8) {
+    uint8_t mask = inb(PIC1_DATA);
+    outb(PIC1_DATA, mask | (1 << (gate)));
+    return SYS_RET_NO_ERROR;
+  } else if(gate < 16) {
+    uint8_t mask = inb(PIC2_DATA);
+    outb(PIC2_DATA, mask | (1 << (gate - 8)));
+    return SYS_RET_NO_ERROR;
+  } else {
+    return SYS_RET_OUT_OF_RANGE;
+  }
 }
 
 SYS_RET arch_irq_initialize()

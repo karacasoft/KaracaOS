@@ -1,0 +1,126 @@
+#ifndef __KEYBOARD_H__
+#define __KEYBOARD_H__ 1
+
+#include <stdint.h>
+#include <kernel/sysdefs.h>
+
+typedef uint16_t key_code_t;
+
+#define KEYBOARD_KEYCODE_NONE            0x00
+#define KEYBOARD_KEYCODE_ESC             0x01
+#define KEYBOARD_KEYCODE_1               0x02
+#define KEYBOARD_KEYCODE_2               0x03
+#define KEYBOARD_KEYCODE_3               0x04
+#define KEYBOARD_KEYCODE_4               0x05
+#define KEYBOARD_KEYCODE_5               0x06
+#define KEYBOARD_KEYCODE_6               0x07
+#define KEYBOARD_KEYCODE_7               0x08
+#define KEYBOARD_KEYCODE_8               0x09
+#define KEYBOARD_KEYCODE_9               0x0A
+#define KEYBOARD_KEYCODE_0               0x0B
+#define KEYBOARD_KEYCODE_MINUS           0x0C
+#define KEYBOARD_KEYCODE_EQUAL           0x0D
+#define KEYBOARD_KEYCODE_BACKSPACE       0x0E
+#define KEYBOARD_KEYCODE_TAB             0x0F
+#define KEYBOARD_KEYCODE_Q               0x10
+#define KEYBOARD_KEYCODE_W               0x11
+#define KEYBOARD_KEYCODE_E               0x12
+#define KEYBOARD_KEYCODE_R               0x13
+#define KEYBOARD_KEYCODE_T               0x14
+#define KEYBOARD_KEYCODE_Y               0x15
+#define KEYBOARD_KEYCODE_U               0x16
+#define KEYBOARD_KEYCODE_I               0x17
+#define KEYBOARD_KEYCODE_O               0x18
+#define KEYBOARD_KEYCODE_P               0x19
+#define KEYBOARD_KEYCODE_BRACKET_OPEN    0x1A
+#define KEYBOARD_KEYCODE_BRACKET_CLOSE   0x1B
+#define KEYBOARD_KEYCODE_ENTER           0x1C
+#define KEYBOARD_KEYCODE_LEFT_CTRL       0x1D
+#define KEYBOARD_KEYCODE_A               0x1E
+#define KEYBOARD_KEYCODE_S               0x1F
+#define KEYBOARD_KEYCODE_D               0x20
+#define KEYBOARD_KEYCODE_F               0x21
+#define KEYBOARD_KEYCODE_G               0x22
+#define KEYBOARD_KEYCODE_H               0x23
+#define KEYBOARD_KEYCODE_J               0x24
+#define KEYBOARD_KEYCODE_K               0x25
+#define KEYBOARD_KEYCODE_L               0x26
+#define KEYBOARD_KEYCODE_SEMICOLON       0x27
+#define KEYBOARD_KEYCODE_QUOTE           0x28
+#define KEYBOARD_KEYCODE_BACKTICK        0x29
+#define KEYBOARD_KEYCODE_LEFTSHIFT       0x2A
+#define KEYBOARD_KEYCODE_BACKSLASH       0x2B
+#define KEYBOARD_KEYCODE_Z               0x2C
+#define KEYBOARD_KEYCODE_X               0x2D
+#define KEYBOARD_KEYCODE_C               0x2E
+#define KEYBOARD_KEYCODE_V               0x2F
+#define KEYBOARD_KEYCODE_B               0x30
+#define KEYBOARD_KEYCODE_N               0x31
+#define KEYBOARD_KEYCODE_M               0x32
+#define KEYBOARD_KEYCODE_COMMA           0x33
+#define KEYBOARD_KEYCODE_DOT             0x34
+#define KEYBOARD_KEYCODE_SLASH           0x35
+#define KEYBOARD_KEYCODE_RIGHT_SHIFT     0x36
+#define KEYBOARD_KEYCODE_KEYPAD_TIMES    0x37
+#define KEYBOARD_KEYCODE_LEFT_ALT        0x38
+#define KEYBOARD_KEYCODE_SPACE           0x39
+#define KEYBOARD_KEYCODE_CAPS_LOCK       0x3A
+#define KEYBOARD_KEYCODE_F1              0x3B
+#define KEYBOARD_KEYCODE_F2              0x3C
+#define KEYBOARD_KEYCODE_F3              0x3D
+#define KEYBOARD_KEYCODE_F4              0x3E
+#define KEYBOARD_KEYCODE_F5              0x3F
+#define KEYBOARD_KEYCODE_F6              0x40
+#define KEYBOARD_KEYCODE_F7              0x41
+#define KEYBOARD_KEYCODE_F8              0x42
+#define KEYBOARD_KEYCODE_F9              0x43
+#define KEYBOARD_KEYCODE_F10             0x44
+#define KEYBOARD_KEYCODE_NUM_LOCK        0x45
+#define KEYBOARD_KEYCODE_SCROLL_LOCK     0x46
+#define KEYBOARD_KEYCODE_KEYPAD_7        0x47
+#define KEYBOARD_KEYCODE_KEYPAD_8        0x48
+#define KEYBOARD_KEYCODE_KEYPAD_9        0x49
+#define KEYBOARD_KEYCODE_KEYPAD_MINUS    0x4A
+#define KEYBOARD_KEYCODE_KEYPAD_4        0x4B
+#define KEYBOARD_KEYCODE_KEYPAD_5        0x4C
+#define KEYBOARD_KEYCODE_KEYPAD_6        0x4D
+#define KEYBOARD_KEYCODE_KEYPAD_PLUS     0x4E
+#define KEYBOARD_KEYCODE_KEYPAD_1        0x4F
+#define KEYBOARD_KEYCODE_KEYPAD_2        0x50
+#define KEYBOARD_KEYCODE_KEYPAD_3        0x51
+#define KEYBOARD_KEYCODE_KEYPAD_0        0x52
+#define KEYBOARD_KEYCODE_KEYPAD_DOT      0x53
+#define KEYBOARD_KEYCODE_ALT_SYSRQ       0x54
+#define KEYBOARD_KEYCODE_CODE55          0x55
+#define KEYBOARD_KEYCODE_CODE56          0x56
+#define KEYBOARD_KEYCODE_F11             0x57
+#define KEYBOARD_KEYCODE_F12             0x58
+#define KEYBOARD_KEYCODE_RIGHT_ALT       0x59
+#define KEYBOARD_KEYCODE_RIGHT_CTRL      0x5A
+#define KEYBOARD_KEYCODE_INSERT          0x5B
+#define KEYBOARD_KEYCODE_DELETE          0x5C
+#define KEYBOARD_KEYCODE_HOME            0x5D
+#define KEYBOARD_KEYCODE_END             0x5E
+#define KEYBOARD_KEYCODE_PAGE_UP         0x5F
+#define KEYBOARD_KEYCODE_PAGE_DOWN       0x60
+#define KEYBOARD_KEYCODE_LEFT            0x61
+#define KEYBOARD_KEYCODE_UP              0x62
+#define KEYBOARD_KEYCODE_DOWN            0x63
+#define KEYBOARD_KEYCODE_RIGHT           0x64
+#define KEYBOARD_KEYCODE_NUMPAD_SLASH    0x65
+#define KEYBOARD_KEYCODE_NUMPAD_ENTER    0x66
+#define KEYBOARD_KEYCODE_PRINT_SCREEN    0x67
+#define KEYBOARD_KEYCODE_PAUSE           0x68
+#define KEYBOARD_KEYCODE_CTRL_BREAK      0x69
+#define KEYBOARD_KEYCODE_LEFT_META       0x6A
+#define KEYBOARD_KEYCODE_RIGHT_META      0x6B
+#define KEYBOARD_KEYCODE_MENU            0x6C
+#define KEYBOARD_KEYCODE_SLEEP           0x6D
+#define KEYBOARD_KEYCODE_POWER           0x6E
+#define KEYBOARD_KEYCODE_WAKE            0x6F
+
+
+SYS_RET keyboard_interrupt_handler(key_code_t keyCode);
+SYS_RET keyboard_initialize();
+
+#endif

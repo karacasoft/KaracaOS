@@ -2,17 +2,15 @@
 #include <interrupts/interrupts.h>
 #include <kernel/sysdefs.h>
 
+#include <dev/keyboard/keyboard.h>
+
 static const char *welcomemessage = SYSTEM_NAME " version 0.0.1\n";
 
-int divisionByZeroExceptionHandler(uint32_t intNo, uint32_t errCode, void *frame) {
+int_return_t divisionByZeroExceptionHandler(uint32_t intNo, uint32_t errCode, void *frame) {
   tty_handle_t *tty = tty_getdefaulthandle();
 
   tty_puts(tty, "A division error has occured\n", 30);
-  return 0;
-}
-
-void require(int nr) {
-  (void *)nr;
+  return INT_RETURN_NO_ERROR;
 }
 
 void kmain(void)
@@ -28,9 +26,7 @@ void kmain(void)
     interrupts_sethandler(0, divisionByZeroExceptionHandler);
     interrupts_enableinterrupts();
 
-    int a = 5;
-
-    tty_puts(tty, "Hmm\n", 5);
+    keyboard_initialize();
 
 /*    int i;
     for(i = 0; i < 30; i++)
