@@ -25,5 +25,4 @@ typedef uint8_t BOOLEAN;
 
 typedef enum __SYS_RET SYS_RET;
 
-
 #endif

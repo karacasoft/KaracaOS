@@ -21,9 +21,12 @@ stack_top:
 .type _start, @function
 _start:
     movl $stack_top, %esp
-
     # global constructors
     call _init
+
+    xor %ebp, %ebp
+    push %ebp
+    movl $stack_top, %esp
 
     # leave control to kernel
     call kmain

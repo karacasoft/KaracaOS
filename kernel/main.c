@@ -4,6 +4,8 @@
 
 #include <dev/keyboard/keyboard.h>
 
+#include <kernel/test.h>
+
 static const char *welcomemessage = SYSTEM_NAME " version 0.0.1\n";
 
 int_return_t divisionByZeroExceptionHandler(uint32_t intNo, uint32_t errCode, void *frame) {
@@ -27,6 +29,8 @@ void kmain(void)
     interrupts_enableinterrupts();
 
     keyboard_initialize();
+
+    int result = my_main();
 
 /*    int i;
     for(i = 0; i < 30; i++)
