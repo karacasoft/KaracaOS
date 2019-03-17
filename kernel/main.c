@@ -16,7 +16,7 @@ int_return_t divisionByZeroExceptionHandler(uint32_t intNo, uint32_t errCode, vo
 }
 
 void kmain(void)
-{
+{ 
     tty_init();
 
     tty_handle_t *tty = tty_getdefaulthandle();

@@ -38,18 +38,20 @@ typedef struct __pci_config_type0 {
 } pci_config_type0_t;
 
 uint16_t pci_configReadWord(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset);
+uint32_t pci_configReadDWord(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset);
 
-uint16_t pci_getVendorId(uint8_t bus, uint8_t slot);
-uint16_t pci_getDeviceId(uint8_t bus, uint8_t slot);
+uint16_t pci_getVendorId(uint8_t bus, uint8_t slot, uint8_t func);
+uint16_t pci_getDeviceId(uint8_t bus, uint8_t slot, uint8_t func);
 
-uint16_t pci_getStatus(uint8_t bus, uint8_t slot);
+uint16_t pci_getStatus(uint8_t bus, uint8_t slot, uint8_t func);
 
-uint8_t pci_getClassCode(uint8_t bus, uint8_t slot);
+uint8_t pci_getClassCode(uint8_t bus, uint8_t slot, uint8_t func);
 
-uint8_t pci_getSubclassCode(uint8_t bus, uint8_t slot);
+uint8_t pci_getSubclassCode(uint8_t bus, uint8_t slot, uint8_t func);
 
-uint8_t pci_getProgInterface(uint8_t bus, uint8_t slot);
+uint8_t pci_getProgInterface(uint8_t bus, uint8_t slot, uint8_t func);
 
 BOOLEAN pci_checkDeviceExists(uint8_t bus, uint8_t slot);
+BOOLEAN pci_checkFunctionExists(uint8_t bus, uint8_t slot, uint8_t func);
 
 #endif // __PCI_H__

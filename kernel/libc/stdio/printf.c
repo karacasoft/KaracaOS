@@ -62,6 +62,8 @@ size_t kaos_printf(const char *format, ...) {
             } else if(*format == 's') {
                 // TODO max 100 characters, change this later
                 tty_puts(tty, va_arg(args, char *), 100);
+            } else if(*format == 'c') {
+                tty_putch(tty, (char) va_arg(args, int));
             } else if(*format == 0) {
                 break;
             }

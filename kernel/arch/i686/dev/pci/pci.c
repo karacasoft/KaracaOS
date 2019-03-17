@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-uint16_t arch_pci_configReadWord(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset) {
+uint32_t arch_pci_configReadDWord(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset) {
     uint32_t address;
     uint32_t lbus = (uint32_t) bus;
     uint32_t lslot = (uint32_t) slot;
@@ -13,6 +13,11 @@ uint16_t arch_pci_configReadWord(uint8_t bus, uint8_t slot, uint8_t func, uint8_
 
     outl(0xCF8, address);
 
-    uint16_t tmp = (uint16_t)((inl(0xCFC) >> ((offset & 2) * 8)) & 0xFFFF);
+    return inl(0xCFC);
+}
+
+uint16_t arch_pci_configReadWord(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset) {
+    uint32_t res = arch_pci_configReadDWord(bus, slot, func, offset);
+    uint16_t tmp = (uint16_t)((res >> ((offset & 2) * 8)) & 0xFFFF);
     return tmp;
 }

@@ -36,3 +36,23 @@ uint32_t inl(uint16_t addr)
 	asm volatile ( "inl %1, %0" : "=a"(ret) : "Nd"(addr) );
 	return ret;
 }
+
+void insw(uint16_t addr, void *ret, size_t len) {
+	len = len / 2;
+	asm volatile ("rep insw" :  : "d"(addr), "D"(ret), "c"(len) : "memory" );
+}
+
+void insl(uint16_t addr, void *ret, size_t len) {
+	len = len / 4;
+	asm volatile ("rep insl" :  : "d"(addr), "D"(ret), "c"(len) : "memory" );
+}
+
+void outsw(uint16_t addr, void *buf, size_t len) {
+	len = len / 2;
+	asm volatile ("rep outsw" :  : "d"(addr), "S"(buf), "c"(len) );
+}
+
+void outsl(uint16_t addr, void *buf, size_t len) {
+	len = len / 4;
+	asm volatile ("rep outsl" :  : "d"(addr), "S"(buf), "c"(len) );
+}

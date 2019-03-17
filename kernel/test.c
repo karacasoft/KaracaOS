@@ -1,22 +1,57 @@
 #include <kernel/test.h>
+#include <kernel/sysdefs.h>
 
 #include <dev/pci/pci.h>
+#include <dev/ide/ide.h>
 #include <tty/tty.h>
 
 #include <libc/stdio.h>
+#include <libc/string.h>
 
 #include <stdint.h>
 
 int my_main() {
-    tty_handle_t *tty = tty_getdefaulthandle();
-
+    ide_ctrl_t *ide_ctrl;
     for(int bus = 0; bus < 256; bus++) {
         for(int slot = 0; slot < 32; slot++) {
             if(pci_checkDeviceExists(bus, slot)) {
                 kaos_printf("Device detected %d:%d\n", bus, slot);
-                kaos_printf("Vendor: %x | Device: %x\n", pci_getVendorId(bus, slot), pci_getDeviceId(bus, slot));
+                for(int func = 0; func < 8; func++) {
+                    if(pci_checkFunctionExists(bus, slot, func)) {
+                        kaos_printf("Function %d:", func);
+                        kaos_printf("\tClassCode: %x | SubClassCode: %x\n", pci_getClassCode(bus, slot, func), pci_getSubclassCode(bus, slot, func));
+                        if(pci_getClassCode(bus, slot, func) == 0x01 &&
+                                pci_getSubclassCode(bus, slot, func) == 0x01) {
+                            if(pci_getProgInterface(bus, slot, func) == 0x80) {
+                                uint16_t BAR4 = pci_configReadWord(bus, slot, func, 0x20);
+                                ide_ctrl = ide_ctrlinit(0x1F0, 0x3F6, 0x170, 0x376, BAR4);
+                            }
+                        }
+
+                    }
+                }
             }
         }
     }
+
+    ide_device_t *device;
+    int i;
+    for(i = 0; i < 4; i++) {
+        if(ide_ctrl->devices[i].deviceExists) {
+            device = &(ide_ctrl->devices[i]);
+            break;
+        }
+    }
+
+    char writeBuffer[512];
+
+    kaos_memset(writeBuffer, 'a', 50);
+    SYS_RET ret = ide_writesector(device, writeBuffer, 0, 1);
+
+    kaos_printf("Reading drive...\n");
+    char myBuffer[512];
+    ret = ide_readsector(device, myBuffer, 0, 1);
+    kaos_printf("Drive read complete...\n");
+
     return 0;
 }
