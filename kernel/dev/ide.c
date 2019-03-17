@@ -14,12 +14,10 @@ extern SYS_RET arch_ide_readbuffer(ide_channel_t *channel, void *buffer, size_t 
 extern SYS_RET arch_ide_writebuffer(ide_channel_t *channel, void *buffer, size_t len);
 
 void fill_device_info(ide_device_t *device, ide_channel_t *channel, ata_drive_identify_buffer_t *identifyInfo);
-SYS_RET wait_for_drive_ready(ide_channel_t *channel);
+static inline SYS_RET wait_for_drive_ready(ide_channel_t *channel);
 
 
 SYS_RET ide_identify_drive(ide_channel_t *channel, ata_drive_identify_buffer_t *buffer) {
-    uint8_t status;
-
     ide_writectrl(channel, ATA_REG_COMMAND_OFFSET, ATA_CMD_IDENTIFY);
     SYS_RET ret = wait_for_drive_ready(channel);
     if(ret != SYS_RET_NO_ERROR) return ret;
@@ -99,19 +97,24 @@ uint8_t ide_readaltstatus(ide_channel_t *channel) {
 
 SYS_RET ide_readsector(ide_device_t *device, void *buffer, uint32_t lba, uint32_t numSectors) {
     if(!device->deviceExists) return SYS_RET_NO_DEVICE;
+
+    if(device->lbaSupported) {
+        ide_writectrl(device->channel, ATA_REG_SECCOUNT_OFFSET, (uint8_t) numSectors);
+        ide_writectrl(device->channel, ATA_REG_LBA0_7_OFFSET, ((lba >> 0) & 0xFF));
+        ide_writectrl(device->channel, ATA_REG_LBA8_15_OFFSET, ((lba >> 8) & 0xFF));
+        ide_writectrl(device->channel, ATA_REG_LBA16_23_OFFSET, ((lba >> 16) & 0xFF));
+        ide_writectrl(device->channel, ATA_REG_LBA24_27_OFFSET, (((lba >> 24) & 0xFF) | (device->deviceId << 4)) | (0b11100000));
+
+        ide_writectrl(device->channel, ATA_REG_COMMAND_OFFSET, ATA_CMD_READ);
+
+        SYS_RET ret = wait_for_drive_ready(device->channel);
+        if(ret != SYS_RET_NO_ERROR) return ret;
+
+        arch_ide_readbuffer(device->channel, buffer, numSectors * 512);
+    } else {
+        return SYS_RET_NOT_IMPLEMENTED;
+    }
     
-    ide_writectrl(device->channel, ATA_REG_SECCOUNT_OFFSET, (uint8_t) numSectors);
-    ide_writectrl(device->channel, ATA_REG_LBA0_7_OFFSET, ((lba >> 0) & 0xFF));
-    ide_writectrl(device->channel, ATA_REG_LBA8_15_OFFSET, ((lba >> 8) & 0xFF));
-    ide_writectrl(device->channel, ATA_REG_LBA16_23_OFFSET, ((lba >> 16) & 0xFF));
-    ide_writectrl(device->channel, ATA_REG_LBA24_27_OFFSET, (((lba >> 24) & 0xFF) & (device->deviceId << 4)) | (0b11100000));
-
-    ide_writectrl(device->channel, ATA_REG_COMMAND_OFFSET, ATA_CMD_READ);
-
-    SYS_RET ret = wait_for_drive_ready(device->channel);
-    if(ret != SYS_RET_NO_ERROR) return ret;
-
-    arch_ide_readbuffer(device->channel, buffer, numSectors * 512);
 
     return SYS_RET_NO_ERROR;
 }
@@ -119,23 +122,26 @@ SYS_RET ide_readsector(ide_device_t *device, void *buffer, uint32_t lba, uint32_
 SYS_RET ide_writesector(ide_device_t *device, void *buffer, uint32_t lba, uint32_t numSectors) {
     if(!device->deviceExists) return SYS_RET_NO_DEVICE;
     
-    ide_writectrl(device->channel, ATA_REG_SECCOUNT_OFFSET, (uint8_t) numSectors);
-    ide_writectrl(device->channel, ATA_REG_LBA0_7_OFFSET, ((lba >> 0) & 0xFF));
-    ide_writectrl(device->channel, ATA_REG_LBA8_15_OFFSET, ((lba >> 8) & 0xFF));
-    ide_writectrl(device->channel, ATA_REG_LBA16_23_OFFSET, ((lba >> 16) & 0xFF));
-    ide_writectrl(device->channel, ATA_REG_LBA24_27_OFFSET, (((lba >> 24) & 0xFF) & (device->deviceId << 4)) | (0b11100000));
+    if(device->lbaSupported) {
+        ide_writectrl(device->channel, ATA_REG_SECCOUNT_OFFSET, (uint8_t) numSectors);
+        ide_writectrl(device->channel, ATA_REG_LBA0_7_OFFSET, ((lba >> 0) & 0xFF));
+        ide_writectrl(device->channel, ATA_REG_LBA8_15_OFFSET, ((lba >> 8) & 0xFF));
+        ide_writectrl(device->channel, ATA_REG_LBA16_23_OFFSET, ((lba >> 16) & 0xFF));
+        ide_writectrl(device->channel, ATA_REG_LBA24_27_OFFSET, (((lba >> 24) & 0xFF) | (device->deviceId << 4)) | (0b11100000));
 
-    ide_writectrl(device->channel, ATA_REG_COMMAND_OFFSET, ATA_CMD_WRITE);
+        ide_writectrl(device->channel, ATA_REG_COMMAND_OFFSET, ATA_CMD_WRITE);
 
-    SYS_RET ret = wait_for_drive_ready(device->channel);
-    if(ret != SYS_RET_NO_ERROR) return ret;
+        SYS_RET ret = wait_for_drive_ready(device->channel);
+        if(ret != SYS_RET_NO_ERROR) return ret;
 
-    arch_ide_writebuffer(device->channel, buffer, numSectors * 512);
+        arch_ide_writebuffer(device->channel, buffer, numSectors * 512);
+    } else {
+        return SYS_RET_NOT_IMPLEMENTED;
+    }
+    
 
     return SYS_RET_NO_ERROR;
 }
-
-
 
 void fill_device_info(ide_device_t *device, ide_channel_t *channel, ata_drive_identify_buffer_t *identifyInfo) {
     uint64_t sectors = identifyInfo->nrAddressableLogicalSectors;
@@ -150,11 +156,25 @@ void fill_device_info(ide_device_t *device, ide_channel_t *channel, ata_drive_id
     device->lbaSupported = !!(identifyInfo->capabilities0 & ATA_CAPABILITY_LBA_SUPPORTED_MASK);
     device->dmaSupported = !!(identifyInfo->capabilities0 & ATA_CAPABILITY_DMA_SUPPORTED_MASK);
     
+    size_t i;
+    for(i = 0; i < 20; i+=2) {
+        device->serialNumber[i] = identifyInfo->serialNumber[i+1];
+        device->serialNumber[i+1] = identifyInfo->serialNumber[i];
+    }
+    device->serialNumber[19] = 0;
+    for(i = 0; i < 40; i+=2) {
+        device->modelNumber[i] = identifyInfo->modelNum[i+1];
+        device->modelNumber[i+1] = identifyInfo->modelNum[i];
+    }
+    device->modelNumber[39] = 0;
+    
 
-    kaos_printf("Found device with capacity %d KB\n", device->capacityKb);
+    kaos_printf("Found storage device with capacity %d KB\n", device->capacityKb);
+    kaos_printf("Model: %s\n", device->modelNumber);
+    kaos_printf("Serial: %s\n", device->serialNumber);
 }
 
-SYS_RET wait_for_drive_ready(ide_channel_t *channel) {
+static inline SYS_RET wait_for_drive_ready(ide_channel_t *channel) {
     uint8_t status;
     for(int i=0; i < 1000000; i++); // use interrupts god damn it...
 

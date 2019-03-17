@@ -14,6 +14,8 @@ struct __ide_device {
     uint32_t capacityKb;
     BOOLEAN dmaSupported;
     BOOLEAN lbaSupported;
+    char serialNumber[20];
+    char modelNumber[40];
 
     ide_channel_t *channel;
 };
