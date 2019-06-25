@@ -1,12 +1,16 @@
 #include <kernel/test.h>
 #include <kernel/sysdefs.h>
 
+#include <fs/ext2/ext2.h>
+
 #include <dev/pci/pci.h>
 #include <dev/ide/ide.h>
 #include <tty/tty.h>
 
 #include <libc/stdio.h>
 #include <libc/string.h>
+
+#include <mm/mm.h>
 
 #include <stdint.h>
 
@@ -43,15 +47,15 @@ int my_main() {
         }
     }
 
-    char writeBuffer[512];
+    block_device_t block_device;
 
-    kaos_memset(writeBuffer, 'a', 50);
-    SYS_RET ret = ide_writesector(device, writeBuffer, 0, 1);
+    block_device.nrSectors = device->capacityKb;
+    block_device.sectorSize = 512;
+    block_device.ide_dev = device;
 
-    kaos_printf("Reading drive...\n");
-    char myBuffer[512];
-    ret = ide_readsector(device, myBuffer, 0, 1);
-    kaos_printf("Drive read complete...\n");
-
+    kaos_printf("Formatting device\n");
+    ext2_format_device(&block_device);
+    kaos_printf("Device formatted\n");
+    
     return 0;
 }

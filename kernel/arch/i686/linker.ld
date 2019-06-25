@@ -23,5 +23,11 @@ SECTIONS
     {
         *(.bss)
     }
+    
+    .heap : ALIGN(4K)
+    {
+        heap_start = .;
+        *(.heap)
+    }
 
 }

@@ -37,3 +37,9 @@ _start:
 1:  hlt
     jmp 1b
 .size _start, . - _start
+
+.section .heap
+.align 32
+heap_top:
+    .skip 10 * 1024 * 1024
+heap_bottom:

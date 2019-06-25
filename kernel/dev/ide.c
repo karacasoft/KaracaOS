@@ -135,6 +135,7 @@ SYS_RET ide_writesector(ide_device_t *device, void *buffer, uint32_t lba, uint32
         if(ret != SYS_RET_NO_ERROR) return ret;
 
         arch_ide_writebuffer(device->channel, buffer, numSectors * 512);
+        ret = wait_for_drive_ready(device->channel);
     } else {
         return SYS_RET_NOT_IMPLEMENTED;
     }
@@ -145,10 +146,10 @@ SYS_RET ide_writesector(ide_device_t *device, void *buffer, uint32_t lba, uint32
 
 void fill_device_info(ide_device_t *device, ide_channel_t *channel, ata_drive_identify_buffer_t *identifyInfo) {
     uint64_t sectors = identifyInfo->nrAddressableLogicalSectors;
-    uint16_t *sectorsBytes = (uint16_t *) &sectors;
+    //uint16_t *sectorsBytes = (uint16_t *) &sectors;
     
-    INT_SWAP(sectorsBytes[0], sectorsBytes[1]);
-    INT_SWAP(sectorsBytes[2], sectorsBytes[3]);
+    //INT_SWAP(sectorsBytes[0], sectorsBytes[1]);
+    //INT_SWAP(sectorsBytes[2], sectorsBytes[3]);
     
     device->deviceExists = TRUE;
     device->capacityKb = (uint32_t)(sectors / 2);
@@ -176,7 +177,10 @@ void fill_device_info(ide_device_t *device, ide_channel_t *channel, ata_drive_id
 
 static inline SYS_RET wait_for_drive_ready(ide_channel_t *channel) {
     uint8_t status;
-    for(int i=0; i < 1000000; i++); // use interrupts god damn it...
+    for(int i = 0; i < 4; i++) {
+        status = ide_readaltstatus(channel); // read the alt status register 4 times to wait for at least 400 ns
+        // use interrupts god damn it...
+    }
 
     if((status = ide_readaltstatus(channel)) == 0) {
         return SYS_RET_NO_DEVICE;

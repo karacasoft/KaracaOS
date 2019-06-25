@@ -117,6 +117,7 @@ struct __ata_drive_identify_buffer {
     uint8_t currentAPMLevel;
     uint16_t masterPasswordIdentifier;
     uint16_t hardResetResults;
+    uint16_t currentAAMValue;
     uint16_t minRequestSize;
     uint16_t streamingTransferTime;
     uint16_t streamingAccessLatency;
