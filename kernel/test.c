@@ -48,10 +48,12 @@ int my_main() {
     }
 
     block_device_t block_device;
+    char rw_buffer[4096] = {0};
 
-    block_device.nrSectors = device->capacityKb;
+    block_device.size_in_kb = device->capacityKb;
     block_device.sectorSize = 512;
     block_device.ide_dev = device;
+    block_device.rw_buffer = rw_buffer;
 
     kaos_printf("Formatting device\n");
     ext2_format_device(&block_device);

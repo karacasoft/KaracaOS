@@ -12,10 +12,9 @@ typedef struct __block_device block_device_t;
  */
 struct __block_device {
     uint32_t sectorSize;
-    uint32_t nrSectors;
+    uint32_t size_in_kb;
     ide_device_t *ide_dev;
-    
-    
+    void *rw_buffer;
 };
 
 /**

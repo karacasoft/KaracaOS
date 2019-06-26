@@ -108,10 +108,12 @@
 #define EXT2_BOOT_LOADER_INO                       5
 #define EXT2_UNDEL_DIR_INO                         6
 
-
 typedef struct __ext2_block_group_descriptor ext2_block_group_descriptor_t;
 typedef struct __ext2_superblock ext2_superblock_t;
 typedef struct __ext2_inode ext2_inode_t;
+typedef struct __ext2_mount_context ext2_mount_context_t;
+
+typedef struct __ext2_directory_element ext2_directory_element_t;
 
 struct __ext2_inode {
     uint16_t i_mode;
@@ -203,18 +205,44 @@ struct __ext2_superblock {
     uint8_t unused[760];
 } __attribute__((packed));
 
+struct __ext2_mount_context {
+    block_device_t *ctx_block_device;
+
+    ext2_superblock_t ctx_superblock;
+    
+    ext2_inode_t cwd;
+    
+};
+
+struct __ext2_directory_element {
+    uint32_t inode;
+    uint16_t rec_len;
+    uint8_t name_len;
+    uint8_t file_type;
+    char *name;
+
+    void *buffer_pos;
+};
 
 
+SYS_RET ext2_format_device(block_device_t *block_device);
+SYS_RET ext2_mount_device(block_device_t *block_device, ext2_mount_context_t *mnt);
+SYS_RET ext2_unmount_device(ext2_mount_context_t *mnt);
 
 
+SYS_RET ext2_set_cwd(ext2_mount_context_t *mnt, const char *name);
+SYS_RET ext2_create_file(ext2_mount_context_t *mnt, const char *name);
+SYS_RET ext2_create_directory(ext2_mount_context_t *mnt, const char *name);
 
-SYS_RET ext2_format_device(block_device_t *blockDevice);
-SYS_RET ext2_mount_device(block_device_t *blockDevice);
-//SYS_RET ext2_unmount_device(block_device_t *blockDevice);
+SYS_RET ext2_add_link(ext2_mount_context_t *mnt, uint32_t dir_inode, const char *name, uint8_t type, uint8_t name_len, uint32_t inode);
 
-SYS_RET ext2_get_file(uint8_t *retfd, char *filename);
-SYS_RET ext2_read_file(uint8_t fd, void *buffer, size_t bufferSize);
-SYS_RET ext2_write_file(uint8_t fd, void *buffer, size_t bufferSize);
+SYS_RET ext2_init_dir_walk(ext2_mount_context_t *mnt, void *buffer, ext2_directory_element_t *first);
+SYS_RET ext2_dir_walk_next(ext2_mount_context_t *mnt, ext2_directory_element_t *element);
 
+SYS_RET ext2_read_inode(ext2_mount_context_t *mnt, ext2_inode_t *inode, uint32_t inode_nr);
+SYS_RET ext2_write_inode(ext2_mount_context_t *mnt, ext2_inode_t *inode, uint32_t inode_nr);
+
+SYS_RET ext2_read_blocks(block_device_t *block_device, uint32_t block_id, void *buffer, size_t count);
+SYS_RET ext2_write_blocks(block_device_t *block_device, uint32_t block_id, void *buffer, size_t count);
 
 #endif // __EXT2_H__
