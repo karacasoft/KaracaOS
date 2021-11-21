@@ -3,7 +3,7 @@
 
 extern SYS_RET arch_keyboard_initialize();
 
-uint8_t keyboard_key_code_to_ascii_map[128] = {
+uint8_t keyboard_key_code_to_ascii_map[256] = {
   0x0, 0x0, '1', '2', '3', '4', '5',  '6', '7',  '8', '9', '0',  '-',  '=', '\b', '\t',
   'q', 'w', 'e', 'r', 't', 'y', 'u',  'i', 'o',  'p', '[', ']',  '\n', 0x0, 'a',  's',
   'd', 'f', 'g', 'h', 'j', 'k', 'l',  ';', '\'', '`', 0x0, '\\', 'z',  'x', 'c',  'v',

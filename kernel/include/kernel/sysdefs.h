@@ -14,6 +14,8 @@ enum __SYS_RET {
   SYS_RET_UNAVAILABLE,
 
   SYS_RET_NOT_IMPLEMENTED,
+
+  SYS_RET_MEM_ALLOC_ERROR,
 };
 
 // System information

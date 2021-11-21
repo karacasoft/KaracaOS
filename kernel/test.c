@@ -15,6 +15,12 @@
 #include <stdint.h>
 
 int my_main() {
+    kaos_printf("Hello world!");
+    
+    return 0;
+}
+
+int format_ide_device() {
     ide_ctrl_t *ide_ctrl;
     for(int bus = 0; bus < 256; bus++) {
         for(int slot = 0; slot < 32; slot++) {
@@ -58,6 +64,6 @@ int my_main() {
     kaos_printf("Formatting device\n");
     ext2_format_device(&block_device);
     kaos_printf("Device formatted\n");
-    
+
     return 0;
 }

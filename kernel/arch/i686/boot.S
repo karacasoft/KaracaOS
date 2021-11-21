@@ -16,13 +16,19 @@ stack_bottom:
     .skip 65536
 stack_top:
 
-.section .text
+.section .prepaging.text
 .global _start
 .type _start, @function
 _start:
-    movl $stack_top, %esp
+    movl $0xA00000, %esp
     # global constructors
-    call _init
+    call arch_paging_init_lower
+
+    mov $page_directory_start, %eax
+    mov %eax, %cr3
+    mov %cr0, %eax
+    or $0x80000001, %eax
+    mov %eax, %cr0
 
     xor %ebp, %ebp
     push %ebp

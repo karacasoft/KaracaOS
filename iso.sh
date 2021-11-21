@@ -9,4 +9,4 @@ menuentry "KaOSVengeance" {
     multiboot /boot/karacaos.kernel
 }
 EOF
-grub-mkrescue -o karacaos.iso sysroot --directory=$CROSS_COMP_BASE/lib/grub/i386-pc
+grub2-mkrescue -o karacaos.iso sysroot --directory=/lib/grub/i386-pc

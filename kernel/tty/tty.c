@@ -10,6 +10,12 @@ void tty_scroll(tty_handle_t *handle);
 void tty_init(void)
 {
     arch_tty_init();
+    uint16_t i;
+    uint16_t *buffer = vga_ttyhandle.getbufferptr();
+    for(i = 0; i < vga_ttyhandle.width * vga_ttyhandle.height; i++)
+    {
+        buffer[i] = 0x0;
+    }
 }
 
 tty_handle_t *tty_getdefaulthandle(void)
@@ -58,19 +64,24 @@ void tty_putch(tty_handle_t *handle, char ch)
     }
     else if(ch == '\b')
     {
+        uint16_t *buffer = handle->getbufferptr();
         size_t index = handle->cursory * handle->width + handle->cursorx;
-        handle->getbufferptr()[index] = 0x0000;
-        while((handle->getbufferptr()[index--] & 0xFF) == '\0')
+        buffer[index - 1] &= 0xFF00;
+        if((handle->cursorx -= 1)  < 0)
         {
-            if(--handle->cursorx < 0)
+            handle->cursorx = handle->width - 1;
+            if(--(handle->cursory) < 0)
             {
-                if(--handle->cursory < 0)
-                {
-                    handle->cursory = 0;
-                }
+                handle->cursory = 0;
             }
+            while((buffer[handle->cursory * handle->width + handle->cursorx] & 0xFF) == 0x00)
+            {
+                handle->cursorx--;
+            }
+            handle->cursorx++;
         }
 
+        return;
     }
     else if(ch == '\t')
     {
