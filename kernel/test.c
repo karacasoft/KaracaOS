@@ -15,8 +15,23 @@
 #include <stdint.h>
 
 int my_main() {
-    kaos_printf("Hello world!");
+    unsigned char *mem;
+    mm_alloc((void **) &mem, 0xA0000000, 4096, 0);
+
+    const char hello[] = "Hello world";
+
+    uint32_t i;
+    for(i = 0; i < sizeof(hello); i++) {
+        mem[i] = hello[i];
+    }
+    mem[i] = '\0';
     
+    kaos_printf("%s", mem);
+
+    mm_free(mem);
+
+    kaos_printf("%s", mem);
+
     return 0;
 }
 

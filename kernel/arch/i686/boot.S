@@ -21,6 +21,8 @@ stack_top:
 .type _start, @function
 _start:
     movl $0xA00000, %esp
+    push %eax
+    push %ebx
     # global constructors
     call arch_paging_init_lower
 
@@ -31,10 +33,14 @@ _start:
     mov %eax, %cr0
 
     xor %ebp, %ebp
+    pop %ebx
+    pop %eax
     push %ebp
     movl $stack_top, %esp
 
     # leave control to kernel
+    push %eax
+    push %ebx
     call kmain
 
     # halt the machine if the control is ever

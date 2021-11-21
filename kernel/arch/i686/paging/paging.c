@@ -41,6 +41,10 @@ page_directory_entry_t *page_dir __attribute__((section(".prepaging.data"))) =
 page_table_entry_t *page_tables __attribute__((section(".prepaging.data"))) =
         (page_table_entry_t *) ((&page_directory_start) + 0x1000);
 
+static inline void arch_paging_invalidate_single_page(uint32_t addr) {
+    asm volatile("invlpg (%0)" : : "r" (addr) : "memory");
+}
+
 void arch_paging_init_lower()
 {
     uint16_t i, j;
@@ -99,6 +103,19 @@ void arch_paging_init_lower()
     return;
 }
 
-void arch_paging_init_higher() {
-    return;
+SYS_RET arch_paging_map(uint32_t virt_addr, uint32_t phys_addr) {
+    page_tables[virt_addr / 4096].value &= 0xFFF;
+    page_tables[virt_addr / 4096].value |= (1 << 0) | (phys_addr & ~0xFFF);
+    return SYS_RET_NO_ERROR;
+}
+
+SYS_RET arch_paging_unmap(uint32_t virt_addr) {
+    page_tables[virt_addr / 4096].value = 0;
+    arch_paging_invalidate_single_page(virt_addr);
+    return SYS_RET_NO_ERROR;
+}
+
+SYS_RET arch_paging_virt_to_phys(uint32_t *phys_addr, uint32_t virt_addr) {
+    *phys_addr = page_tables[virt_addr / 4096].value & ~0xFFF;
+    return SYS_RET_NO_ERROR;
 }
