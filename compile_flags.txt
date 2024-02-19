@@ -1,0 +1,5 @@
+-I
+kernel/include
+-I
+kernel/arch/i686
+-Wall

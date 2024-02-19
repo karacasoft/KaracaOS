@@ -14,6 +14,7 @@ int_return_t divisionByZeroExceptionHandler(uint32_t intNo, uint32_t errCode, vo
   tty_handle_t *tty = tty_getdefaulthandle();
 
   tty_puts(tty, "A division error has occured\n", 30);
+  while(1);
   return INT_RETURN_NO_ERROR;
 }
 

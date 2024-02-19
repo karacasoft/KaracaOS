@@ -17,6 +17,8 @@ enum __SYS_RET {
   SYS_RET_NOT_IMPLEMENTED,
 
   SYS_RET_MEM_ALLOC_ERROR,
+
+  SYS_RET_MALFORMED,
 };
 
 // System information
