@@ -13,13 +13,33 @@
 #include <libc/string.h>
 
 #include <mm/mm.h>
+#include <mm/buddy_allocator.h>
 
 #include <stdint.h>
 
 int format_ide_device();
 
 int my_main() {
-  format_ide_device();
+  const char *hello_world = "Hello world!";
+  uint8_t *hello;
+  kaos_printf("Allocating memory...\n");
+  SYS_RET ret = buddy_allocator__alloc(13, &hello);
+  kaos_printf("Allocating memory 2\n");
+  uint8_t *deneme;
+  SYS_RET ret2 = buddy_allocator__alloc(25, &deneme);
+  if(ret != SYS_RET_NO_ERROR) {
+    kaos_printf("Buddy Alloc error\n");
+  }
+
+  size_t i;
+  for(i = 0; i < 13; i++) {
+    hello[i] = hello_world[i];
+    deneme[i] = hello_world[i];
+  }
+
+  kaos_printf("%s\n", hello);
+  kaos_printf("deneme %s\n", deneme);
+
   return 0;
 }
 
@@ -79,7 +99,6 @@ int format_ide_device() {
   fat16_read_file(&context, &dir_entry, file_contents, 6000);
 
   kaos_printf("File contents: %s\n", file_contents);
-  kaos_printf("EOF?? 0x%x\n", file_contents[4]);
 
   return 0;
 }

@@ -105,8 +105,11 @@ void arch_paging_init_lower() {
 }
 
 SYS_RET arch_paging_map(uint32_t virt_addr, uint32_t phys_addr) {
-  page_tables[virt_addr / 4096].value &= 0xFFF;
-  page_tables[virt_addr / 4096].value |= (1 << 0) | (phys_addr & ~0xFFF);
+  uint64_t table = virt_addr / 4096;
+  page_dir[table / 1024].value |= (1 << 0) | (1 << 1);
+
+  page_tables[table].value = 0xFFF;
+  page_tables[table].value |= (1 << 0) | (1 << 1) | (phys_addr & ~0xFFF);
   return SYS_RET_NO_ERROR;
 }
 

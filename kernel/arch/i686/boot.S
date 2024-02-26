@@ -23,7 +23,7 @@ _start:
     movl $0xA00000, %esp
     push %eax
     push %ebx
-    # global constructors
+
     call arch_paging_init_lower
 
     mov $page_directory_start, %eax

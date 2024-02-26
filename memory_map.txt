@@ -1,0 +1,11 @@
+
+0x10000000-0x90000000 = Userspace
+
+
+0xC0000000 = Kernel
+  0xC8000000-0xC9000000 = mem_alloc_table
+
+0xD0000000 = Filesystem stuff
+  0xD1000000 = 2nd disk or whatever...
+
+0xE0000000 = Reserved Sections Access
