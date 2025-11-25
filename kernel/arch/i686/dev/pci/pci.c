@@ -1,5 +1,5 @@
 #include <dev/pci/pci.h>
-#include "../../iobase.h"
+#include <arch/iobase.h>
 
 #include <stdint.h>
 

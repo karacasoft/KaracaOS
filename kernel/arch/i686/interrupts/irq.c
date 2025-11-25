@@ -1,7 +1,8 @@
-#include "irq.h"
-
+#include <syscall/syscall.h>
+#include <interrupts/interrupts.h>
 #include <kernel/sysdefs.h>
-#include "../iobase.h"
+#include <arch/iobase.h>
+#include <arch/interrupts/irq.h>
 
 #define IRQ_TIMER 		0x00
 #define IRQ_KEYBOARD		0x01
@@ -98,3 +99,6 @@ SYS_RET arch_irq_initialize()
   setup_pic(32, 40);
   return SYS_RET_NO_ERROR;
 }
+
+
+

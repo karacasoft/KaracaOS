@@ -576,6 +576,19 @@ _isr47:
 
 
 
+.section .text
+.global _isr128
+.type _isr128, @function
+_isr128:
+  cli
+  pushl $0
+
+  pushl $128
+  jmp _isr_common_handler
+.size _isr128, . - _isr128
+
+
+
 _isr_common_handler:
   pusha
   pushw %ds

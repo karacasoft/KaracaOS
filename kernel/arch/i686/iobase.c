@@ -1,5 +1,5 @@
 #include <stdint.h>
-#include "iobase.h"
+#include <arch/iobase.h>
 
 void outb(uint16_t addr, uint8_t val)
 {

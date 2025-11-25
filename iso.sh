@@ -5,8 +5,10 @@ export PATH=$PATH:$CROSS_COMP_BASE/bin
 mkdir -p sysroot/boot/grub
 
 cat > sysroot/boot/grub/grub.cfg << EOF
+default 1
+timeout 5
 menuentry "KaOSVengeance" {
     multiboot /boot/karacaos.kernel
 }
 EOF
-grub2-mkrescue -o karacaos.iso sysroot --directory=/lib/grub/i386-pc
+grub-mkrescue -o karacaos.iso sysroot --directory=/lib/grub/i386-pc

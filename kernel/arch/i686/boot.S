@@ -20,6 +20,7 @@ stack_top:
 .global _start
 .type _start, @function
 _start:
+    cli
     movl $0xA00000, %esp
     push %eax
     push %ebx

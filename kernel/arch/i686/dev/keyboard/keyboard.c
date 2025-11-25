@@ -1,10 +1,10 @@
 #include <kernel/sysdefs.h>
-#include "../../iobase.h"
+#include <arch/iobase.h>
 #include <interrupts/interrupts.h>
 
 #include <dev/keyboard/keyboard.h>
 
-#include "scancode_resolve.h"
+#include <arch/keyboard/scancode_resolve.h>
 
 int_return_t arch_keyboard_interrupt_handler(uint32_t intNo, uint32_t errCode, void *fullStackFrame)
 {

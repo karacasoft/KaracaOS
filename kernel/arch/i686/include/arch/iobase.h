@@ -2,6 +2,7 @@
 #define __IOBASE_H__ 1
 
 #include <stddef.h>
+#include <stdint.h>
 
 uint8_t inb(uint16_t addr);
 void outb(uint16_t addr, uint8_t val);

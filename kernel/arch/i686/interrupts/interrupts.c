@@ -1,7 +1,7 @@
 #include <kernel/sysdefs.h>
 #include <interrupts/interrupts.h>
 
-#include "irq.h"
+#include <arch/interrupts/irq.h>
 
 extern void _isr0();
 extern void _isr1();
@@ -53,6 +53,7 @@ extern void _isr45();
 extern void _isr46();
 extern void _isr47();
 
+extern void _isr128();
 
 typedef struct __IDTEntry {
   uint16_t offset1;
@@ -76,6 +77,8 @@ typedef struct __X86InterruptStackFrame {
 
 static generic_int_handler_t intHandler = 0;
 
+static syscall_handler_t generic_syscall_handler = 0;
+
 static IDTInfo idtInfo;
 static IDTEntry idtEntries[INTERRUPT_VECTOR_COUNT];
 
@@ -89,7 +92,7 @@ void prepareInterruptGate(uint8_t gate, uint32_t handler, uint16_t selector, uin
 
 void lidt(void *base, uint16_t size) {
   idtInfo.size = size;
-  idtInfo.offset = base;
+  idtInfo.offset = (uint32_t) base;
 
   asm volatile ("lidt %0" :  : "m"(idtInfo) );
 }
@@ -145,6 +148,7 @@ SYS_RET arch_interrupts_init()
   prepareInterruptGate(45, (uint32_t) _isr45, 0x10, 0x8E);
   prepareInterruptGate(46, (uint32_t) _isr46, 0x10, 0x8E);
   prepareInterruptGate(47, (uint32_t) _isr47, 0x10, 0x8E);
+  prepareInterruptGate(128, (uint32_t) _isr128, 0x10, 0x8E);
 
   SYS_RET ret = arch_irq_initialize();
   if(ret) return ret;
@@ -195,4 +199,22 @@ void _arch_interrupt_handler(X86InterruptStackFrame *frame)
     intHandler(frame->int_no, frame->err_code, (void *)frame);
   }
 
+}
+
+int_return_t __arch__syscall_initial_handler(uint32_t intNo, uint32_t errCode, void *stackFrame) {
+  X86InterruptStackFrame *frame = stackFrame;
+  uint32_t syscall_num = frame->eax;
+  uint32_t param1 = frame->edi;
+  uint32_t param2 = frame->esi;
+  uint32_t param3 = frame->ebx;
+  uint32_t param4 = frame->ecx;
+  uint32_t param5 = frame->edx;
+  
+  (*generic_syscall_handler)(syscall_num, (uint32_t []) {param1, param2, param3, param4, param5});
+  return INT_RETURN_NO_ERROR;
+}
+
+SYS_RET arch_set_syscall_handler(syscall_handler_t handler) {
+  generic_syscall_handler = handler;
+  return SYS_RET_NO_ERROR;
 }

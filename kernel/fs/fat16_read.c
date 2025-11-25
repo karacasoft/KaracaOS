@@ -292,20 +292,19 @@ SYS_RET fat16_read_cluster_fat_chain(fat16_context_t *context, uint32_t cluster,
 }
 
 SYS_RET fat16_read_file(fat16_context_t *context, fat16_dir_entry_t *entry,
-                        void *buffer, size_t len) {
+                        void *buffer, size_t len, size_t *out_len) {
   if (entry->attributes & (FAT_ATTRIB_SUBDIR | FAT_ATTRIB_VOLUME_LABEL)) {
     return SYS_RET_MALFORMED;
   }
 
   uint32_t cluster = CLUSTER_OF(*entry);
   uint32_t length = entry->file_size > len ? len : entry->file_size;
+  *out_len = len > length ? length : len;
   if(length == 0) {
     return SYS_RET_NO_ERROR;
   }
-  kaos_printf("File size: %d\n", length);
   uint32_t cluster_chain[128];
   fat16_read_cluster_fat_chain(context, cluster, cluster_chain);
-  kaos_printf("Cluster 0: %d\n", cluster_chain[0]);
 
   size_t i;
   uint32_t cluster_size =
@@ -316,7 +315,6 @@ SYS_RET fat16_read_file(fat16_context_t *context, fat16_dir_entry_t *entry,
                            context->data_area_start_cluster,
                        context->buffer);
     kaos_memcpy(((uint8_t *)buffer) + i, context->buffer, cluster_size);
-    kaos_printf("Read done at: %d\n", i);
   }
   fat16_read_cluster(context,
                      (cluster_chain[(i / cluster_size) + 1] - 2) +

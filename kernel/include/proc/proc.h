@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 #include <kernel/sysdefs.h>
-#include <proc/arch_proc.h>
+#include <arch/arch_proc/arch_proc.h>
 
 #define MAX_PROC 32768
 

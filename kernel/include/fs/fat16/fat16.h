@@ -90,6 +90,6 @@ SYS_RET fat16_find_file_entry(fat16_context_t *context, char *path,
                               fat16_dir_entry_t *out_entry);
 
 SYS_RET fat16_read_file(fat16_context_t *context, fat16_dir_entry_t *entry,
-                        void *buffer, size_t len);
+                        void *buffer, size_t len, size_t *out_len);
 
 #endif // __FAT16_H__

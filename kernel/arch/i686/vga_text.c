@@ -1,4 +1,4 @@
-#include "vga_text.h"
+#include <arch/vga_text.h>
 
 #include <tty/tty.h>
 #include <kernel/sysdefs.h>

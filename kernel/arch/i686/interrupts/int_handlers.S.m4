@@ -60,6 +60,8 @@ INT_HANDLER(45, 0)
 INT_HANDLER(46, 0)
 INT_HANDLER(47, 0)
 
+INT_HANDLER(128, 0)
+
 _isr_common_handler:
   pusha
   pushw %ds

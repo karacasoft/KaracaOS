@@ -4,6 +4,8 @@
 
 0xC0000000 = Kernel
   0xC8000000-0xC9000000 = mem_alloc_table
+  0xCA000000-0xCFFFFFFF = kernel_stack
+
 
 0xD0000000 = Filesystem stuff
   0xD1000000 = 2nd disk or whatever...

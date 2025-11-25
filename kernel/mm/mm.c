@@ -134,6 +134,7 @@ SYS_RET mm_find_empty_block_physical(void **ret_addr) {
     }
   }
   if(i == 8) {
+    kaos_printf("Physical mem not enough\n");
     return SYS_RET_NOT_FOUND;
   }
 
@@ -207,14 +208,14 @@ SYS_RET mm_alloc(void **ret_addr, uint32_t vaddr, uint32_t size,
 }
 
 SYS_RET mm_free(void *addr) {
-  uint16_t i;
   uint32_t vm_block = (uint32_t)addr / 4096;
 
   uint32_t phys_addr;
   arch_paging_virt_to_phys(&phys_addr, vm_block * 4096);
   uint32_t phys_block = phys_addr / 4096;
 
-  arch_paging_unmap(phys_addr);
+  kaos_printf("Unmapping addr: 0x%x\n", addr);
+  arch_paging_unmap((uint32_t)addr);
 
   mm_page_alloc_bitmap[phys_block / 8] &= ~(1 << (phys_block % 8));
   mm_vm_alloc_bitmap[vm_block / 8] &= ~(1 << (vm_block % 8));

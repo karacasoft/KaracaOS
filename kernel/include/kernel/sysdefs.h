@@ -19,6 +19,8 @@ enum __SYS_RET {
   SYS_RET_MEM_ALLOC_ERROR,
 
   SYS_RET_MALFORMED,
+
+  SYS_RET_UNSUPPORTED,
 };
 
 // System information
@@ -30,8 +32,8 @@ enum __SYS_RET {
 
 // System data types
 typedef uint8_t BOOLEAN;
-#define TRUE (1)
-#define FALSE (0)
+#define TRUE ((uint8_t)1)
+#define FALSE ((uint8_t)0)
 
 
 typedef enum __SYS_RET SYS_RET;

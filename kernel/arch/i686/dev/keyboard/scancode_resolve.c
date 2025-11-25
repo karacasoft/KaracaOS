@@ -1,6 +1,8 @@
-#include "scancode_resolve.h"
+#include <arch/keyboard/scancode_resolve.h>
 
 #define SCANCODE_COUNT 109
+
+extern uint8_t inb(uint16_t addr);
 
 const static uint8_t scancode_set_1[][SCANCODE_COUNT] = {
   { 0x29, 0x00, KEYBOARD_KEYCODE_BACKTICK },

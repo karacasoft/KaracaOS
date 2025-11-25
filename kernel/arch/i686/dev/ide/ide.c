@@ -1,7 +1,7 @@
 #include <dev/ide/ide.h>
 #include <dev/ide/ata.h>
 
-#include "../../iobase.h"
+#include <arch/iobase.h>
 
 uint8_t arch_ide_readaltstatus(ide_channel_t *channel);
 SYS_RET arch_ide_writecmd(ide_channel_t *channel, uint8_t data);

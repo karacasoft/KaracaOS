@@ -1,4 +1,5 @@
 #include "dev/block/block_dev.h"
+#include <interrupts/interrupts.h>
 #include <kernel/sysdefs.h>
 #include <kernel/test.h>
 
@@ -12,93 +13,125 @@
 #include <libc/stdio.h>
 #include <libc/string.h>
 
-#include <mm/mm.h>
+#include <elf/elf.h>
 #include <mm/buddy_allocator.h>
+#include <mm/mm.h>
 
 #include <stdint.h>
+#include <elf/elf.h>
 
 int format_ide_device();
+int read_fat16();
 
 int my_main() {
-  const char *hello_world = "Hello world!";
-  uint8_t *hello;
-  kaos_printf("Allocating memory...\n");
-  SYS_RET ret = buddy_allocator__alloc(13, &hello);
-  kaos_printf("Allocating memory 2\n");
-  uint8_t *deneme;
-  SYS_RET ret2 = buddy_allocator__alloc(25, &deneme);
-  if(ret != SYS_RET_NO_ERROR) {
-    kaos_printf("Buddy Alloc error\n");
-  }
+  // const char *hello_world = "Hello world!";
+  // uint8_t *hello;
+  // kaos_printf("Allocating memory...\n");
+  // SYS_RET ret = buddy_allocator__alloc(13, (void **)&hello);
+  // kaos_printf("Allocated addr: 0x%x\n", hello);
+  // kaos_printf("Allocating memory 2\n");
+  // uint8_t *deneme;
+  // SYS_RET ret2 = buddy_allocator__alloc(25, (void **)&deneme);
+  // kaos_printf("Allocated addr: 0x%x\n", deneme);
+  // if(ret != SYS_RET_NO_ERROR) {
+  //   kaos_printf("Buddy Alloc error\n");
+  // }
+  // if(ret2 != SYS_RET_NO_ERROR) {
+  //   kaos_printf("Buddy alloc error 2\n");
+  // }
+  //
+  // size_t i;
+  // for(i = 0; i < 13; i++) {
+  //   hello[i] = hello_world[i];
+  //   deneme[i] = hello_world[i];
+  // }
+  //
+  // kaos_printf("%s\n", hello);
+  // buddy_allocator__free(hello);
+  // kaos_printf("deneme %s\n", deneme);
+  // kaos_printf("Hello? %s\n", hello);
+  //
+  // read_fat16();
 
-  size_t i;
-  for(i = 0; i < 13; i++) {
-    hello[i] = hello_world[i];
-    deneme[i] = hello_world[i];
-  }
-
-  kaos_printf("%s\n", hello);
-  kaos_printf("deneme %s\n", deneme);
+  const char *filename = "stdout";
+  asm volatile ("int $0x80\n" : : "a"(1), "D"(filename));
 
   return 0;
 }
 
-int format_ide_device() {
-  ide_ctrl_t *ide_ctrl;
-  for (int bus = 0; bus < 256; bus++) {
-    for (int slot = 0; slot < 32; slot++) {
-      if (pci_checkDeviceExists(bus, slot)) {
-        kaos_printf("Device detected %d:%d\n", bus, slot);
-        for (int func = 0; func < 8; func++) {
-          if (pci_checkFunctionExists(bus, slot, func)) {
-            kaos_printf("Function %d:", func);
-            kaos_printf("\tClassCode: %x | SubClassCode: %x\n",
-                        pci_getClassCode(bus, slot, func),
-                        pci_getSubclassCode(bus, slot, func));
-            if (pci_getClassCode(bus, slot, func) == 0x01 &&
-                pci_getSubclassCode(bus, slot, func) == 0x01) {
-              if (pci_getProgInterface(bus, slot, func) == 0x80) {
-                uint16_t BAR4 = pci_configReadWord(bus, slot, func, 0x20);
-                ide_ctrl = ide_ctrlinit(0x1F0, 0x3F6, 0x170, 0x376, BAR4);
-              }
-            }
-          }
-        }
-      }
-    }
-  }
+int file_system_traverser() {}
 
-  ide_device_t *device = NULL;
-  int i;
-  for (i = 0; i < 4; i++) {
-    if (ide_ctrl->devices[i].deviceExists) {
-      device = &(ide_ctrl->devices[i]);
-      break;
-    }
-  }
+int read_fat16() {
 
-  block_device_t block_device;
-  char rw_buffer[4096] = {0};
-
-  block_device.size_in_kb = device->capacityKb;
-  block_device.sectorSize = 512;
-  block_device.ide_dev = device;
-  block_device.rw_buffer = rw_buffer;
-
-  fat16_dir_entry_t dir_entry;
-  char *file_contents;
-  SYS_RET ret = mm_alloc((void **)&file_contents, 0x30000000, 4096 * 3, 0);
-  if(ret != SYS_RET_NO_ERROR) {
-    kaos_printf("Error");
-    return ret;
-  }
-
-  fat16_context_t context;
-  fat16_create_context(&block_device, &context);
-  fat16_find_file_entry(&context, "/VAYBE/TEST100.TXT", &dir_entry);
-  fat16_read_file(&context, &dir_entry, file_contents, 6000);
-
-  kaos_printf("File contents: %s\n", file_contents);
+  // fat16_dir_entry_t dir_entry;
+  // char *file_contents;
+  // SYS_RET ret = buddy_allocator__alloc(4096 * 3, (void **)&file_contents);
+  // if (ret != SYS_RET_NO_ERROR) {
+  //   kaos_printf("Error");
+  //   return ret;
+  // }
+  //
+  // fat16_context_t context;
+  // fat16_create_context(&block_device, &context);
+  // fat16_find_file_entry(&context, "/EXAMPLE.ELF", &dir_entry);
+  // fat16_read_file(&context, &dir_entry, file_contents, 6000);
+  //
+  // Elf32_Ehdr hdr;
+  // ret = elf__parse_header(&hdr, file_contents);
+  // if (ret) {
+  //   kaos_printf("ELF header parse failed");
+  // }
+  //
+  // kaos_printf("Entry is here: 0x%x\n", hdr.e_entry);
+  //
+  // Elf32_Off phoff = hdr.e_phoff;
+  // Elf32_Half phnum = hdr.e_phnum;
+  // kaos_printf("PH offset is 0x%x\n", phoff);
+  // kaos_printf("PH count: %d\n", phnum);
+  //
+  // Elf32_Phdr phdrs[100] = {0};
+  // ret = elf__parse_program_headers(phdrs, &hdr, file_contents);
+  // if (ret) {
+  //   kaos_printf("Failed to parse PH headers");
+  // }
+  //
+  // Elf32_Phdr phdr;
+  // for (i = 0; i < phnum; i++) {
+  //   phdr = phdrs[i];
+  //
+  //   kaos_printf("PHDR %d\n", i);
+  //   kaos_printf("  Type: %d\n", phdr.p_type);
+  //   kaos_printf("  Offset: 0x%x\n", phdr.p_offset);
+  //   kaos_printf("  V. Addr: 0x%x\n", phdr.p_vaddr);
+  //   kaos_printf("  P. Addr: 0x%x\n", phdr.p_paddr);
+  //   kaos_printf("  File Sz.: 0x%x\n", phdr.p_filesz);
+  //   kaos_printf("  Mem Sz.: 0x%x\n", phdr.p_memsz);
+  //   kaos_printf("  Flags: 0x%x\n", phdr.p_flags);
+  //   kaos_printf("  Align: %d\n", phdr.p_align);
+  //
+  //   if (phdr.p_type == 1) {
+  //     void *loc;
+  //     kaos_printf("Allocating memory for ELF\n");
+  //     ret = buddy_allocator__alloc(phdr.p_memsz, &loc);
+  //     if (ret) {
+  //       kaos_printf("Mem alloc error\n");
+  //       return 1;
+  //     }
+  //     kaos_printf("Allocated location: 0x%x\n", loc);
+  //
+  //     kaos_printf("Copying data to location\n");
+  //     kaos_memcpy(loc, &file_contents[phdr.p_offset], phdr.p_filesz);
+  //
+  //     void *entry = loc + hdr.e_entry - phdr.p_vaddr;
+  //
+  //     int (*entry_func)(void) = entry;
+  //
+  //     int ret_val = entry_func();
+  //
+  //     kaos_printf("Loaded program returned %d\n", ret_val);
+  //
+  //   }
+  // }
 
   return 0;
 }

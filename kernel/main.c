@@ -1,4 +1,4 @@
-#include "mm/buddy_allocator.h"
+#include <mm/buddy_allocator.h>
 #include <interrupts/interrupts.h>
 #include <kernel/sysdefs.h>
 #include <libc/stdio.h>
@@ -7,6 +7,7 @@
 #include <tty/tty.h>
 
 #include <dev/keyboard/keyboard.h>
+#include <fs/fscontext.h>
 
 #include <kernel/test.h>
 
@@ -51,12 +52,14 @@ void kmain(multiboot_info_t *info, unsigned int magic) {
   interrupts_init();
   interrupts_sethandler(0, divisionByZeroExceptionHandler);
   interrupts_sethandler(14, pageFaultHandler);
+
+  buddy_allocator__init();
+  keyboard_initialize();
   interrupts_enableinterrupts();
 
-  keyboard_initialize();
-  buddy_allocator__init();
-  kaos_printf("Init complete??\n");
+  fscontext__init();
 
+  kaos_printf("Init complete\n");
   int result = my_main();
 
   /*    int i;

@@ -1,5 +1,5 @@
 -I
 kernel/include
 -I
-kernel/arch/i686
+kernel/arch/i686/include
 -Wall
