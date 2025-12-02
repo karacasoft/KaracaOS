@@ -26,11 +26,24 @@ struct __IO_FILE {
   int _flags2;
 };
 
+
 typedef struct __IO_FILE FILE;
+
+extern FILE *kaos_stdin;
+extern FILE *kaos_stdout;
+extern FILE *kaos_stderr;
+
+void __kaos_init_stdlib();
+size_t kaos_preboot_printf(const char *format, ...);
 
 size_t kaos_printf(const char *format, ...);
 FILE *kaos_fopen(const char *path, const char *mode);
 size_t kaos_fread(void *buffer, size_t size, size_t count, FILE *stream);
 size_t kaos_fwrite(const void *ptr, size_t size, size_t nitems, FILE *stream);
+int kaos_vfprintf(FILE *stream, const char *format, va_list args);
+int kaos_fprintf(FILE *stream, const char *format, ...);
+
+int kaos_vsprintf(char *str, const char *format, va_list args);
+int kaos_sprintf(char *str, const char *format, ...);
 
 #endif

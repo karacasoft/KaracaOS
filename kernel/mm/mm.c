@@ -16,8 +16,6 @@ uint32_t mm_available_block_count = 0;
 uint32_t mm_mem_info_idx = 0;
 mm_allocated_memory_info_t mm_memory_info[100000];
 
-BOOLEAN mm_is_memory_available(uint32_t size, uint32_t *vm_block);
-
 extern SYS_RET arch_paging_unmap(uint32_t virt_addr);
 extern SYS_RET arch_paging_map(uint32_t virt_addr, uint32_t phys_addr);
 extern SYS_RET arch_paging_virt_to_phys(uint32_t *phys_addr,
@@ -44,13 +42,13 @@ SYS_RET mm_init(multiboot_info_t *info) {
   uint32_t size = info->mmap_length;
   uint32_t total_block_count = 0;
 
-  kaos_printf("Detecting memory...\n");
+  kaos_preboot_printf("Detecting memory...\n");
   int32_t j = 0;
   multiboot_memory_map_t *entry = (multiboot_memory_map_t *)(info->mmap_addr);
   for (i = 0; i < size; i += sizeof(multiboot_memory_map_t)) {
 
     if (entry->type == MULTIBOOT_MEMORY_AVAILABLE) {
-      kaos_printf("%d: Addr: %x Len: %x\n", j++, (uint32_t)entry->addr,
+      kaos_preboot_printf("%d: Addr: %x Len: %x\n", j++, (uint32_t)entry->addr,
                   (uint32_t)entry->len);
       uint32_t start_block = (entry->addr / 4096);
       uint32_t block_count = (entry->len / 4096);
@@ -68,14 +66,14 @@ SYS_RET mm_init(multiboot_info_t *info) {
 
       total_block_count += block_count;
     } else if (entry->type == MULTIBOOT_MEMORY_ACPI_RECLAIMABLE) {
-      kaos_printf("ACPI Reclaimable 0x%x - Length: 0x%d\n", entry->addr,
+      kaos_preboot_printf("ACPI Reclaimable 0x%x - Length: 0x%d\n", entry->addr,
                   entry->len);
     } else if (entry->type == MULTIBOOT_MEMORY_NVS) {
-      kaos_printf("NVS 0x%x - Length: 0x%d\n", entry->addr, entry->len);
+      kaos_preboot_printf("NVS 0x%x - Length: 0x%d\n", entry->addr, entry->len);
     } else if (entry->type == MULTIBOOT_MEMORY_BADRAM) {
-      kaos_printf("BADRAM 0x%x - Length: 0x%d\n", entry->addr, entry->len);
+      kaos_preboot_printf("BADRAM 0x%x - Length: 0x%d\n", entry->addr, entry->len);
     } else {
-      kaos_printf("Reserved Mem Addr. 0x%x - Length: 0x%d\n", entry->addr,
+      kaos_preboot_printf("Reserved Mem Addr. 0x%x - Length: 0x%d\n", entry->addr,
                   entry->len);
       uint32_t start_block = entry->addr / 4096;
       uint32_t end_block = (entry->addr + entry->len) / 4096;
@@ -134,7 +132,7 @@ SYS_RET mm_find_empty_block_physical(void **ret_addr) {
     }
   }
   if(i == 8) {
-    kaos_printf("Physical mem not enough\n");
+    kaos_preboot_printf("Physical mem not enough\n");
     return SYS_RET_NOT_FOUND;
   }
 
@@ -190,9 +188,12 @@ SYS_RET mm_alloc(void **ret_addr, uint32_t vaddr, uint32_t size,
     void *empty_block;
     mm_find_empty_block_physical(&empty_block);
     uint32_t j = ((uint32_t) empty_block) / 4096;
-    ret = arch_paging_map(vm_block * 4096, j * 4096);
+    uint32_t k;
+    for (k = 0; k < size_in_blocks; k++) {
+      ret = arch_paging_map(vm_block * 4096 + k * 4096, j * 4096 + k * 4096);
+    }
     if (ret != SYS_RET_NO_ERROR) {
-      kaos_printf("Error while allocating??\n");
+      kaos_preboot_printf("Error while allocating??\n");
       return ret;
     }
     ALLOC_PAGE(j);
@@ -202,7 +203,7 @@ SYS_RET mm_alloc(void **ret_addr, uint32_t vaddr, uint32_t size,
 
     return SYS_RET_NO_ERROR;
   } else {
-    kaos_printf("VM address already allocated\n");
+    kaos_preboot_printf("VM address already allocated\n");
     return SYS_RET_MEM_ALLOC_ERROR;
   }
 }
@@ -214,7 +215,7 @@ SYS_RET mm_free(void *addr) {
   arch_paging_virt_to_phys(&phys_addr, vm_block * 4096);
   uint32_t phys_block = phys_addr / 4096;
 
-  kaos_printf("Unmapping addr: 0x%x\n", addr);
+  kaos_preboot_printf("Unmapping addr: 0x%x\n", addr);
   arch_paging_unmap((uint32_t)addr);
 
   mm_page_alloc_bitmap[phys_block / 8] &= ~(1 << (phys_block % 8));

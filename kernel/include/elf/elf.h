@@ -2,6 +2,7 @@
 #define __ELF_H__ 1
 #include "kernel/sysdefs.h"
 #include <stdint.h>
+#include <stddef.h>
 
 typedef uint32_t Elf32_Addr;
 typedef uint16_t Elf32_Half;
@@ -123,10 +124,17 @@ typedef struct {
   Elf32_Word p_align;
 } Elf32_Phdr;
 
+typedef struct {
+  Elf32_Addr r_offset;
+  Elf32_Word r_info;
+} Elf32_Rel;
+
 SYS_RET elf__parse_header(Elf32_Ehdr *ret, void *buffer);
 SYS_RET elf__parse_section_headers(Elf32_Shdr *out_shdr, Elf32_Ehdr *elf_hdr,
                                    void *buffer);
 SYS_RET elf__parse_program_headers(Elf32_Phdr *out_phdr, Elf32_Ehdr *elf_hdr,
                                    void *buffer);
+
+SYS_RET elf__load_elf_file(void *buffer, size_t size, void **loaded_loc, void **entry);
 
 #endif // !__ELF_H__

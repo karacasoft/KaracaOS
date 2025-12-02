@@ -203,14 +203,15 @@ void _arch_interrupt_handler(X86InterruptStackFrame *frame)
 
 int_return_t __arch__syscall_initial_handler(uint32_t intNo, uint32_t errCode, void *stackFrame) {
   X86InterruptStackFrame *frame = stackFrame;
+  // arch specific code: 32-bit architecture, warnings ok
   uint32_t syscall_num = frame->eax;
-  uint32_t param1 = frame->edi;
-  uint32_t param2 = frame->esi;
-  uint32_t param3 = frame->ebx;
-  uint32_t param4 = frame->ecx;
-  uint32_t param5 = frame->edx;
+  void *param1 = (void *) frame->edi;
+  void *param2 = (void *) frame->esi;
+  void *param3 = (void *) frame->ebx;
+  void *param4 = (void *) frame->ecx;
+  void *param5 = (void *) frame->edx;
   
-  (*generic_syscall_handler)(syscall_num, (uint32_t []) {param1, param2, param3, param4, param5});
+  (*generic_syscall_handler)(syscall_num, (void *[]) {param1, param2, param3, param4, param5});
   return INT_RETURN_NO_ERROR;
 }
 

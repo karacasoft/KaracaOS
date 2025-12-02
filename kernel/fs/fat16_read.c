@@ -33,7 +33,7 @@ SYS_RET fat16_create_context(block_device_t *device, fat16_context_t *context) {
 
   void *buffer;
   ret = mm_alloc(
-      &buffer, 0xD0000000,
+      &buffer, 0xD0010000,
       context->device->sectorSize * context->boot_sector.sectorsPerCluster, 0);
   if (ret != SYS_RET_NO_ERROR) {
     return ret;
@@ -207,7 +207,7 @@ SYS_RET fat16_find_in_dir(fat16_context_t *context, char *file_to_find,
   return SYS_RET_NO_ERROR;
 }
 
-SYS_RET fat16_find_file_entry(fat16_context_t *context, char *path,
+SYS_RET fat16_find_file_entry(fat16_context_t *context, const char *path,
                               fat16_dir_entry_t *out_entry) {
   char path_copy[1024];
   char *path_copy_ptr = path_copy;

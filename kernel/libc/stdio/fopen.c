@@ -5,6 +5,8 @@
 #include <fs/fat16/fat16.h>
 #include <fs/fscontext.h>
 
+extern block_device_t __block_device;
+extern fat16_context_t __fscontext;
 
 fat16_dir_entry_t __open_files[MAX_OPEN_FILES] = {0};
 uint8_t __is_open_file_entry_used[MAX_OPEN_FILES] = {1, 1, 1, 0};
@@ -18,16 +20,16 @@ FILE *kaos_fopen(const char *path, const char *mode) {
     kaos_printf("Cannot allocate memory for FILE *\n");
     return NULL;
   }
-  if (kaos_strncmp("/dev/stdin", path, sizeof("/dev/stdin"))) {
+  if (kaos_strncmp("/dev/stdin", path, sizeof("/dev/stdin")) == 0) {
     fp->_fileno = 0;
-  } else if (kaos_strncmp("/dev/stdout", path, sizeof("/dev/stdout"))) {
+  } else if (kaos_strncmp("/dev/stdout", path, sizeof("/dev/stdout")) == 0) {
     fp->_fileno = 1;
-  } else if (kaos_strncmp("/dev/stderr", path, sizeof("/dev/stderr"))) {
+  } else if (kaos_strncmp("/dev/stderr", path, sizeof("/dev/stderr")) == 0) {
     fp->_fileno = 2;
   } else {
     fat16_dir_entry_t dir_entry;
 
-    ret = fat16_find_file_entry(&__fscontext, "/EXAMPLE.ELF", &dir_entry);
+    ret = fat16_find_file_entry(&__fscontext, path, &dir_entry);
     if (ret != SYS_RET_NO_ERROR) {
       kaos_printf("Cannot find file entry\n");
       return NULL;

@@ -2,7 +2,7 @@
 #define __STDIO_H__ 1
 
 #include <stddef.h>
-
+#include <stdarg.h>
 
 struct __IO_FILE {
   int _flags;
@@ -26,12 +26,15 @@ struct __IO_FILE {
 
 typedef struct __IO_FILE FILE;
 
+extern FILE *stdin;
+extern FILE *stdout;
 extern FILE *stderr;
 
 #define SEEK_SET 0
 
-int vfprintf(FILE *stream, const char *format, ...);
+int vfprintf(FILE *stream, const char *format, va_list args);
 int printf(const char *format, ...);
+int vsprintf(char *str, const char *format, va_list args);
 int sprintf(char *str, const char *format, ...);
 
 int fflush(FILE *stream);

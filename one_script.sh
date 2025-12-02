@@ -1,3 +1,3 @@
-./build.sh all
-./build.sh install
+./build.sh kernel
+./build.sh kernel-install
 ./iso.sh

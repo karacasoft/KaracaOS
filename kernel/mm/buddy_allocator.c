@@ -34,7 +34,7 @@ SYS_RET buddy_allocator__init() {
   for (i = 0; i < (tree_area_size / 4096); i++) {
     void *ret_mem;
     if ((ret = mm_alloc(&ret_mem, (0xC8000000U + (i * 4096)), 4096, 0))) {
-      kaos_printf("Hata??\n");
+      kaos_preboot_printf("Hata??\n");
       while (TRUE)
         ;
       return ret;
@@ -50,7 +50,7 @@ SYS_RET buddy_allocator__init() {
   binary_tree_node_t *root_node;
   ret = __buddy_allocator__alloc_node(&root_node);
   if (ret != SYS_RET_NO_ERROR) {
-    kaos_printf("Alloc node error\n");
+    kaos_preboot_printf("Alloc node error\n");
     return ret;
   }
 
@@ -82,7 +82,7 @@ SYS_RET __buddy_allocator__alloc_node(binary_tree_node_t **out_node) {
 
     if (ptr - tree_location > tree_area_size) {
       // PANIC
-      kaos_printf("Tree size overflow\n");
+      kaos_preboot_printf("Tree size overflow\n");
       return SYS_RET_UNAVAILABLE;
     }
   }
@@ -158,13 +158,13 @@ SYS_RET buddy_allocator__alloc(uint32_t len, void **out_addr) {
 
   uint32_t rem_mem = mm_available_block_count * 4096;
   if (len > rem_mem) {
-    kaos_printf("Phys mem not enough\n");
+    kaos_preboot_printf("Phys mem not enough\n");
     return SYS_RET_MEM_ALLOC_ERROR;
   }
 
   ret = __buddy_allocator__find_space(len, node, &node);
   if (ret != SYS_RET_NO_ERROR) {
-    kaos_printf("Find space failed\n");
+    kaos_preboot_printf("Find space failed\n");
     return ret;
   }
 
@@ -175,7 +175,7 @@ SYS_RET buddy_allocator__alloc(uint32_t len, void **out_addr) {
   for (i = (uint64_t)info->vaddr; i < (uint64_t)info->vaddr + info->len;
        i += 4096) {
     if ((ret = mm_alloc(&ret_mem, i, 4096, 0))) {
-      kaos_printf("mm_alloc error\n");
+      kaos_preboot_printf("mm_alloc error\n");
       return ret;
     }
   }
@@ -221,8 +221,12 @@ SYS_RET __buddy_allocator__find_space(size_t len, binary_tree_node_t *node,
   }
 
   if (cur_value->len > 2 * len && cur_value->len < 4 * len) {
-    *out_node = node;
-    return SYS_RET_NO_ERROR;
+    if (node->left == NULL && node->right == NULL) {
+      *out_node = node;
+      return SYS_RET_NO_ERROR;
+    } else {
+      return SYS_RET_NOT_FOUND;
+    }
   }
   if (node->left == NULL && node->right == NULL) {
     if (cur_value->len <= MIN_MEM_SPLIT) {

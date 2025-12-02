@@ -1,5 +1,9 @@
 #include <fs/fscontext.h>
 
+block_device_t __block_device;
+fat16_context_t __fscontext;
+char __block_device_rwbuffer[4096];
+
 SYS_RET fscontext__init() {
   SYS_RET ret = SYS_RET_NO_ERROR;
   ide_ctrl_t *ide_ctrl;
@@ -51,7 +55,6 @@ SYS_RET fscontext__init() {
     kaos_printf("FAT16 context creation failed\n");
     return ret;
   }
-
   
   return ret;
 }

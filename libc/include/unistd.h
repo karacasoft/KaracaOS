@@ -3,7 +3,7 @@
 
 #include "sys/types.h"
 
-typedef int intptr_t;
+typedef long intptr_t;
 
 pid_t fork(void);
 pid_t getpid(void);

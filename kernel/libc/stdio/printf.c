@@ -3,9 +3,15 @@
 #include <libc/stdio.h>
 #include <tty/tty.h>
 
-// kaos_print("%d\n", 123);
-
 size_t kaos_printf(const char *format, ...) {
+  va_list args;
+  va_start(args, format);
+  int retVal = kaos_vfprintf(kaos_stdout, format, args);
+  va_end(args);
+  return retVal;
+}
+
+size_t kaos_preboot_printf(const char *format, ...) {
   va_list args;
   va_start(args, format);
   tty_handle_t *tty = tty_getdefaulthandle();

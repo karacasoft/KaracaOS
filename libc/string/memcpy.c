@@ -1,3 +1,4 @@
+#include <stddef.h>
 
 void *memcpy(void *dest, const void *source, size_t num) {
     char *dst = (char *) dest;

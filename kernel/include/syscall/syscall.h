@@ -12,6 +12,6 @@ enum syscall_function {
   SYS_CALL_FCLOSE = 4,
 };
 
-SYS_RET syscall__generic_syscall_handler(enum syscall_function function, uint32_t params[5]);
+SYS_RET syscall__generic_syscall_handler(enum syscall_function function, void *params[5]);
 
 #endif

@@ -86,7 +86,7 @@ SYS_RET fat16_read_directory(fat16_context_t *context, uint32_t cluster,
                              fat16_dir_entry_t *out_dir_entries,
                              uint32_t max_entries);
 
-SYS_RET fat16_find_file_entry(fat16_context_t *context, char *path,
+SYS_RET fat16_find_file_entry(fat16_context_t *context, const char *path,
                               fat16_dir_entry_t *out_entry);
 
 SYS_RET fat16_read_file(fat16_context_t *context, fat16_dir_entry_t *entry,

@@ -46,6 +46,7 @@ mm_init(multiboot_info_t *info);
 SYS_RET mm_find_empty_block_physical(void **ret_addr);
 SYS_RET mm_alloc(void **ret, uint32_t vaddr, uint32_t size, uint32_t flags);
 SYS_RET mm_free(void *ret);
+BOOLEAN mm_is_memory_available(uint32_t size, uint32_t *vm_block);
 
 void *kaos_kernmalloc(size_t size);
 

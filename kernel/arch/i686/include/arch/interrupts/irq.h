@@ -7,7 +7,7 @@
 
 #include <interrupts/interrupts.h>
 
-typedef SYS_RET (*syscall_handler_t)(enum syscall_function, uint32_t params[5]);
+typedef SYS_RET (*syscall_handler_t)(enum syscall_function, void *params[5]);
 
 void _arch_irq_generic_handler(uint32_t intNo, generic_int_handler_t handler);
 

@@ -30,8 +30,10 @@ SYS_RET ext2_format_device(block_device_t *blockDevice) {
   ext2_superblock_t superblock;
   uint32_t block_size = 1024;
   uint32_t inodes_per_group = 1712;
-  uint8_t initial_block_bitmap[1024] = {0};
-  uint8_t initial_inode_bitmap[1024] = {0};
+  uint8_t initial_block_bitmap[1024];
+  kaos_memset(initial_block_bitmap, 0, 1024);
+  uint8_t initial_inode_bitmap[1024];
+  kaos_memset(initial_inode_bitmap, 0, 1024);
   if ((ret = fill_superblock(&superblock, block_size, blockDevice->sectorSize,
           blockDevice->size_in_kb, inodes_per_group))) {
     return ret;
@@ -132,7 +134,7 @@ SYS_RET ext2_format_device(block_device_t *blockDevice) {
     kaos_printf("Error allocating inode 2");
   }
   i = 11;
-  inode_ret = allocate_inode(&mnt, &i, TRUE, TRUE); // /lost+found directory
+  inode_ret = allocate_inode(&mnt, (uint32_t *)&i, TRUE, TRUE); // /lost+found directory
   if(inode_ret != SYS_RET_NO_ERROR) {
     kaos_printf("Error allocating inode 11");
   }
@@ -305,7 +307,8 @@ SYS_RET ext2_read_inode(ext2_mount_context_t *mnt, ext2_inode_t *inode,
   ext2_block_group_descriptor_t desc_table[32];
   ext2_read_blocks(mnt->ctx_block_device, 2, (void *)desc_table, 1);
 
-  char inode_bitmap_block[1024] = {0};
+  char inode_bitmap_block[1024];
+  kaos_memset(inode_bitmap_block, 0, 1024);
   ext2_read_blocks(mnt->ctx_block_device,
                    desc_table[target_block_group].bg_inode_bitmap,
                    (void *)inode_bitmap_block, 1);
@@ -339,7 +342,8 @@ SYS_RET ext2_write_inode(ext2_mount_context_t *mnt, ext2_inode_t *inode,
   ext2_block_group_descriptor_t desc_table[32];
   ext2_read_blocks(mnt->ctx_block_device, 2, (void *)desc_table, 1);
 
-  char inode_bitmap_block[1024] = {0};
+  char inode_bitmap_block[1024];
+  kaos_memset(inode_bitmap_block, 0, 1024);
   ext2_read_blocks(mnt->ctx_block_device,
                    desc_table[target_block_group].bg_inode_bitmap,
                    (void *)inode_bitmap_block, 1);

@@ -4,7 +4,11 @@
 *.img
 *.iso
 *.kernel
+libc/libc.a
+example/example.elf
 sysroot
+
+mnt/
 
 # IDE config
 .vscode

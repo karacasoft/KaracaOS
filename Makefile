@@ -1,5 +1,6 @@
 TARGETARCH := i686
 
+
 SYSROOT := ./sysroot
 DESTDIR := $(SYSROOT)
 
@@ -9,11 +10,11 @@ INCLUDEDIR := $(PREFIX)/include
 BINDIR := /bin
 BOOTDIR := /boot
 
-PROJDIRS := kernel
+PROJDIRS := kernel libc
 
-CC := $(TARGETARCH)-elf-gcc --sysroot=$(SYSROOT)
-AS := $(TARGETARCH)-elf-as
-AR := $(TARGETARCH)-elf-ar
+CC := $(TARGETARCH)-elf-karacaos-gcc --sysroot=$(SYSROOT)
+AS := $(TARGETARCH)-elf-karacaos-as
+AR := $(TARGETARCH)-elf-karacaos-ar
 
 LD := $(TARGETARCH)-elf-ld
 
@@ -28,7 +29,7 @@ all: mkdirs $(PROJDIRS)
 clean: $(addsuffix -clean,$(PROJDIRS))
 	rm -rf $(SYSROOT)
 
-install: $(addsuffix -install,$(PROJDIRS))
+install: mkdirs $(addsuffix -install,$(PROJDIRS))
 
 mkdirs:
 	mkdir -p $(SYSROOT)

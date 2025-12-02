@@ -2,7 +2,7 @@
 The successor of my last operating system project. (Sadly,) no creative name.
 
 ## Requirements:
-* A i386-elf or i686-elf cross compiler
+* A i686-elf cross compiler
 * Grub bootloader
 * xorriso (to create .iso images)
 * qemu (to test the system)
